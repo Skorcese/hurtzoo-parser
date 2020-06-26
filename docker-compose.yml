@@ -1,0 +1,20 @@
+version: "3"
+services:
+#  hurtzoo-parser:
+#    container_name: hurtzoo-parser
+#    image: node:14
+#    command: node src/index.js
+#    working_dir: ${PWD}
+#    volumes:
+#      - ${PWD}:${PWD}
+#
+  moondog-parser-db:
+    image: mysql
+    restart: always
+    command: --default-authentication-plugin=mysql_native_password
+    volumes:
+      - ~/projects/hurtzoo-parser/data:/var/lib/mysql
+    environment:
+      MYSQL_ROOT_PASSWORD: 123qwe
+    ports:
+    - "3307:3306"
