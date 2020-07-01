@@ -28,3 +28,4 @@ export const sequelize = new Sequelize(
 
 export const Product = ProductModel(sequelize, Sequelize);
 export const Category = CategoryModel(sequelize, Sequelize);
+export const Op = Sequelize.Op;

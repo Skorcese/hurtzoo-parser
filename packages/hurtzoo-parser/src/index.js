@@ -1,6 +1,6 @@
 import dotenv from 'dotenv';
-import { close, init } from './puppeteerUtils/index.js';
-import { sequelize } from './db/index.js';
+import { close, init } from 'utils/puppeteer/index.js';
+import { sequelize } from 'db';
 import {
   getCategories,
   getNextCategoryUrl,
