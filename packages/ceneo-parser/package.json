@@ -1,5 +1,5 @@
 {
-  "name": "ceneo-parser",
+  "name": "@bushidogames/ceneo-parser",
   "version": "1.0.0",
   "description": "",
   "main": "index.js",

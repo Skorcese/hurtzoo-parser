@@ -1,5 +1,5 @@
 import { DEFAULT_SERVICE, BASE_URL } from '../config.js';
-import { Product } from 'db';
+import { Product } from '@bushidogames/db';
 
 const getUniquePaginationUrls = (urls) =>
   [...new Set(urls)].filter((url) => !url.match(/javascript/));

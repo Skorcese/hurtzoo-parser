@@ -1,10 +1,8 @@
-import { close, init } from 'utils/puppeteer/index.js';
-import { sequelize } from 'db';
+import { close, initBrowser } from '@bushidogames/utils';
 import { getPricePerEAN } from './modules/product.js';
 
 (async () => {
-  await sequelize.sync({ force: false });
-  const { browser, page } = await init({
+  const { browser, page } = await initBrowser({
     headless: false,
   });
 

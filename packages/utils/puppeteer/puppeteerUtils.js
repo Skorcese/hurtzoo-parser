@@ -1,6 +1,6 @@
 import puppeteer from 'puppeteer';
 
-export const init = async ({ headless }) => {
+export const initBrowser = async ({ headless }) => {
   const browser = await puppeteer.launch({
     headless,
     args: ['--remote-debugging-port=9222'],

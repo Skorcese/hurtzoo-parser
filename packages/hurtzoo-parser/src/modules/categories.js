@@ -1,5 +1,5 @@
 import { DEFAULT_SERVICE, BASE_URL } from '../config.js';
-import { Category } from 'db';
+import { Category } from '@bushidogames/db';
 
 export const setProductsPerPageCookie = async (page) => {
   return page.$eval('.categories-ajax', () => {

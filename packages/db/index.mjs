@@ -1,6 +1,6 @@
 'use strict';
 import dotenv from 'dotenv';
-
+import path from 'path';
 import Sequelize from 'sequelize';
 import { ProductModel } from './models/product.js';
 import { CategoryModel } from './models/category.js';
