@@ -2,6 +2,7 @@ import Fetch from 'isomorphic-unfetch';
 import React from 'react';
 import styled from 'styled-components';
 import Table from '../components/table';
+import TableV from '../components/table-virtualized';
 
 const Styles = styled.div`
   padding: 1rem;
@@ -65,9 +66,12 @@ const Root = ({ products }) => {
   ];
 
   return (
-    <Styles>
-      <Table columns={columns} data={products}></Table>
-    </Styles>
+    // <Styles>
+    //   <Table columns={columns} data={products}></Table>
+    // </Styles>
+    <>
+      <TableV data={products} columns={columns} />
+    </>
   );
 };
 
