@@ -1,0 +1,13 @@
+{
+  "name": "@bushidogames/db",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.mjs",
+  "type": "module",
+  "dependencies": {
+    "sequelize": "^5.21.10"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC"
+}

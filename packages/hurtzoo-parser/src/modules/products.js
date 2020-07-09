@@ -1,5 +1,5 @@
 import { DEFAULT_SERVICE, BASE_URL } from '../config.js';
-import { Product } from '../db/index.js';
+import { Product } from '@bushidogames/db';
 
 const getUniquePaginationUrls = (urls) =>
   [...new Set(urls)].filter((url) => !url.match(/javascript/));
@@ -49,7 +49,7 @@ const getProductsFromOnePage = async (page, url) => {
       return {
         name: product.name_pl || product.name,
         localId: product.products_id,
-        netPrice: product.gross_price / 1.08,
+        price: product.gross_price,
         ean: product.ean || product.products_model,
         producer: product.pr_name,
         url: product.url,

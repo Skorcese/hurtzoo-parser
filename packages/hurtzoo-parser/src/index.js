@@ -1,6 +1,6 @@
 import dotenv from 'dotenv';
-import { close, init } from './puppeteerUtils/index.js';
-import { sequelize } from './db/index.js';
+import { close, initBrowser } from '@bushidogames/utils';
+import { sequelize } from '@bushidogames/db';
 import {
   getCategories,
   getNextCategoryUrl,
@@ -15,7 +15,7 @@ dotenv.config();
 
 const main = async () => {
   await sequelize.sync({ force: false });
-  const { browser, page } = await init({
+  const { browser, page } = await initBrowser({
     headless: false,
   });
 

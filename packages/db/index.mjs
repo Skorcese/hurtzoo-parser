@@ -1,6 +1,6 @@
 'use strict';
 import dotenv from 'dotenv';
-
+import path from 'path';
 import Sequelize from 'sequelize';
 import { ProductModel } from './models/product.js';
 import { CategoryModel } from './models/category.js';
@@ -28,3 +28,4 @@ export const sequelize = new Sequelize(
 
 export const Product = ProductModel(sequelize, Sequelize);
 export const Category = CategoryModel(sequelize, Sequelize);
+export const Op = Sequelize.Op;

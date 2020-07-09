@@ -11,7 +11,10 @@ export const ProductModel = (sequelize, DataTypes) => {
     localId: {
       type: DataTypes.STRING,
     },
-    netPrice: {
+    price: {
+      type: DataTypes.STRING,
+    },
+    ceneoPrice: {
       type: DataTypes.STRING,
     },
     ean: {
@@ -25,6 +28,10 @@ export const ProductModel = (sequelize, DataTypes) => {
     },
     imageUrl: {
       type: DataTypes.STRING,
+    },
+    visitId: {
+      type: DataTypes.INTEGER,
+      defaultValue: 0,
     },
   });
 
