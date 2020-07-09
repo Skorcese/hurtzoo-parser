@@ -5,18 +5,19 @@ import Sequelize from 'sequelize';
 import { ProductModel } from './models/product.js';
 import { CategoryModel } from './models/category.js';
 
-dotenv.config();
+// to działa tylko dla data-display + konflikt z .mjs z parserami
+dotenv.config({
+  path: `${path.dirname(require.resolve('@bushidogames/db'))}/.env`,
+});
+// dotenv.config();
 
 export const sequelize = new Sequelize(
   'moondog_parsers',
-  // process.env.MYSQL_USER,
-  // process.env.MYSQL_PASS,
-  'root',
-  '123qwe',
+  process.env.MYSQL_USER,
+  process.env.MYSQL_PASS,
   {
     logging: false,
-    // port: process.env.MYSQL_PORT,
-    port: 3307,
+    port: process.env.MYSQL_PORT,
     host: '127.0.0.1',
     dialect: 'mysql',
     // todo: setup pool for prod

@@ -2,7 +2,8 @@
   "name": "@bushidogames/db",
   "version": "1.0.0",
   "description": "",
-  "main": "index.js",
+  "main": "index.mjs",
+  "type": "module",
   "dependencies": {
     "sequelize": "^5.21.10"
   },

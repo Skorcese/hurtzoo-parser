@@ -1,10 +1,14 @@
+import dotenv from 'dotenv';
 import puppeteer from 'puppeteer';
 
-export const initBrowser = async ({ headless }) => {
+dotenv.config();
+
+export const initBrowser = async () => {
   const browser = await puppeteer.launch({
-    headless,
+    headless: process.env.HEADLESS || true,
     args: ['--remote-debugging-port=9222'],
   });
+
   const page = await browser.newPage();
 
   await page.setViewport({ width: 1400, height: 800 });

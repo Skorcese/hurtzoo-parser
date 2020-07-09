@@ -3,6 +3,5 @@
 node_modules
 .DS_Store
 data
-Dockerfile
 yarn-error.log
 .next

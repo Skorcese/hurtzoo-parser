@@ -2,7 +2,7 @@ import React from 'react';
 import { Column, Table, AutoSizer, SortDirection } from 'react-virtualized';
 import _ from 'lodash';
 
-class TableV extends React.Component {
+class TableVirtualized extends React.Component {
   constructor(props) {
     super(props);
 
@@ -18,6 +18,9 @@ class TableV extends React.Component {
   }
 
   render() {
+    const { sortBy, sortDirection, sortedList } = this.state;
+    const { data } = this.props;
+
     return (
       <div style={{ width: '100%', height: '100vh' }}>
         <AutoSizer>
@@ -27,26 +30,16 @@ class TableV extends React.Component {
               height={height}
               headerHeight={80}
               rowHeight={60}
-              rowCount={this.props.data.length}
+              rowCount={data.length}
               sort={this._sort}
-              sortBy={this.state.sortBy}
-              sortDirection={this.state.sortDirection}
-              rowCount={this.state.sortedList.length}
-              rowGetter={({ key, index, style, parent }) =>
-                this.state.sortedList[index]
-              }
+              sortBy={sortBy}
+              sortDirection={sortDirection}
+              rowCount={sortedList.length}
+              rowGetter={({ key, index, style, parent }) => sortedList[index]}
             >
-              {Object.keys(this.props.data[0]).map((key) => (
+              {Object.keys(data[0]).map((key) => (
                 <Column width={100} label={key} name={key} dataKey={key} />
               ))}
-              {/* {this.props.columns.map(({ Header, accessor }) => (
-                <Column
-                  width={100}
-                  label={Header}
-                  name={Header}
-                  dataKey={accessor}
-                />
-              ))} */}
             </Table>
           )}
         </AutoSizer>
@@ -55,7 +48,7 @@ class TableV extends React.Component {
   }
 
   _sortList = ({ sortBy, sortDirection }) => {
-    let newList = _.sortBy(this.props.data, [sortBy]);
+    const newList = _.sortBy(this.props.data, [sortBy]);
     if (sortDirection === SortDirection.DESC) {
       newList.reverse();
     }
@@ -68,4 +61,4 @@ class TableV extends React.Component {
   };
 }
 
-export default TableV;
+export default TableVirtualized;

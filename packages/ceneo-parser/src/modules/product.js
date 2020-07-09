@@ -2,18 +2,25 @@ import { BASE_URL } from '../config.js';
 import { Product, Op } from '@bushidogames/db';
 
 export const getPricePerEAN = async (page) => {
+  console.log('-------------------------------');
   const product = await getNextEAN();
-
   console.log('EAN - ', product.ean);
+
   await page.goto(`${BASE_URL}+${product.ean}`);
+  await page.setUserAgent(
+    'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/83.0.4103.0 Safari/537.36',
+  );
   const url = await page.url();
 
-  const price = await parsePrices(page, url);
-  console.log('ceneoPrice: ', price);
+  let price = 0;
+  try {
+    price = await parsePrices(page, url);
+    console.log('ceneoPrice: ', price);
+  } catch (error) {}
 
   await updateProduct(price, product);
 
-  if (shouldSearchNext(product.visitId + 1)) {
+  if (shouldSearchNext(product.visitId)) {
     await getPricePerEAN(page);
   }
 };
@@ -25,13 +32,22 @@ const getNextEAN = async () => {
   });
 };
 
+const getPriceSelectors = (url) => {
+  return url.includes('/;szukaj')
+    ? ['.cat-prod-row', '.alert > .cat-prod-row']
+    : ['.category-list', '.category-list-body > .cat-prod-box'];
+};
+
 const parsePrices = async (page, url) => {
-  if (url.includes('/;szukaj')) {
-    await page.waitForSelector('.cat-prod-row');
-    return getPrices(page, '.alert > .cat-prod-row');
-  } else {
-    await page.waitForSelector('.category-list');
-    return getPrices(page, '.category-list-body > .cat-prod-box');
+  const [isSelectorAvailable, priceSelector] = getPriceSelectors(url);
+
+  try {
+    await page.waitForSelector(isSelectorAvailable);
+    console.log('Price retrieved successfully');
+    return getPrices(page, priceSelector);
+  } catch (error) {
+    console.log('Product not found');
+    return 0;
   }
 };
 
