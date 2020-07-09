@@ -7,4 +7,6 @@ const handler = async (req, res) => {
   return res.send(products);
 };
 
-export default handler;
+export const getProducts = async () => {
+  return Product.findAll();
+};

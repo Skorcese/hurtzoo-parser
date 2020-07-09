@@ -1,22 +1,20 @@
 import { BASE_URL } from '../config.js';
 import { Product, Op } from '@bushidogames/db';
 
+const USER_AGENT =
+  'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/83.0.4103.0 Safari/537.36';
+
 export const getPricePerEAN = async (page) => {
   console.log('-------------------------------');
   const product = await getNextEAN();
   console.log('EAN - ', product.ean);
 
   await page.goto(`${BASE_URL}+${product.ean}`);
-  await page.setUserAgent(
-    'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/83.0.4103.0 Safari/537.36',
-  );
+  await page.setUserAgent(USER_AGENT);
   const url = await page.url();
 
-  let price = 0;
-  try {
-    price = await parsePrices(page, url);
-    console.log('ceneoPrice: ', price);
-  } catch (error) {}
+  const price = await parsePrices(page, url);
+  console.log('ceneoPrice: ', price);
 
   await updateProduct(price, product);
 
@@ -56,7 +54,7 @@ const getPrices = async (page, selector) => {
     const parsed = items.map((item) => {
       const price = item.querySelector('span.price').textContent;
 
-      return price.trim().replace(',', '.').replace(' ', '');
+      return parseFloat(price.trim().replace(',', '.').replace(' ', ''));
     });
 
     return parsed.sort()[0];

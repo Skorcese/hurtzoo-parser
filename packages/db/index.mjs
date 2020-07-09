@@ -5,11 +5,7 @@ import Sequelize from 'sequelize';
 import { ProductModel } from './models/product.js';
 import { CategoryModel } from './models/category.js';
 
-// to działa tylko dla data-display + konflikt z .mjs z parserami
-dotenv.config({
-  path: `${path.dirname(require.resolve('@bushidogames/db'))}/.env`,
-});
-// dotenv.config();
+dotenv.config();
 
 export const sequelize = new Sequelize(
   'moondog_parsers',
