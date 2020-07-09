@@ -54,10 +54,12 @@ const getPrices = async (page, selector) => {
     const parsed = items.map((item) => {
       const price = item.querySelector('span.price').textContent;
 
-      return parseFloat(price.trim().replace(',', '.').replace(' ', ''));
+      return parseFloat(
+        price.trim().replace(',', '.').replace(' ', ''),
+      ).toFixed(2);
     });
 
-    return parsed.sort()[0];
+    return parsed.sort((a, b) => a - b)[0];
   });
 };
 
