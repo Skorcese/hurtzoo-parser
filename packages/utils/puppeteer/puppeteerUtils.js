@@ -5,8 +5,12 @@ dotenv.config();
 
 export const initBrowser = async () => {
   const browser = await puppeteer.launch({
-    headless: process.env.HEADLESS || true,
-    args: ['--remote-debugging-port=9222'],
+    headless: process.env.HEADLESS,
+    args: [
+      '--remote-debugging-port=9222',
+      '--no-sandbox',
+      '--disable-setuid-sandbox',
+    ],
   });
 
   const page = await browser.newPage();

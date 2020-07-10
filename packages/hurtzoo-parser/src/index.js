@@ -14,7 +14,7 @@ import { getProducts, storeProducts } from './modules/products.js';
 dotenv.config();
 
 const main = async () => {
-  await sequelize.sync({ force: false });
+  await sequelize.sync({ force: true });
   const { browser, page } = await initBrowser({
     headless: false,
   });
