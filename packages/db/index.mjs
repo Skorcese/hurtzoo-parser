@@ -5,7 +5,9 @@ import Sequelize from 'sequelize';
 import { ProductModel } from './models/product.js';
 import { CategoryModel } from './models/category.js';
 
-dotenv.config();
+dotenv.config({
+  path: `${path.dirname(require.resolve('@bushidogames/db'))}/.env`,
+});
 
 export const sequelize = new Sequelize(
   'moondog_parsers',
