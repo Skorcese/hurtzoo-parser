@@ -8,8 +8,8 @@
     "start": "node src/index.js"
   },
   "dependencies": {
-    "db": "1.0.0",
-    "utils": "1.0.0"
+    "@bushidogames/db": "1.0.0",
+    "@bushidogames/utils": "1.0.0"
   },
   "keywords": [],
   "author": "",
