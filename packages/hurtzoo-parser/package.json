@@ -12,8 +12,8 @@
   "dependencies": {
     "dotenv": "^8.2.0",
     "mysql2": "^2.1.0",
-    "db": "1.0.0",
-    "utils": "1.0.0"
+    "@bushidogames/db": "1.0.0",
+    "@bushidogames/utils": "1.0.0"
   },
   "devDependencies": {
     "prettier": "^2.0.5"
