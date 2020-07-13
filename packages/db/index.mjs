@@ -4,18 +4,18 @@ import path from 'path';
 import Sequelize from 'sequelize';
 import { ProductModel } from './models/product.js';
 import { CategoryModel } from './models/category.js';
-
-dotenv.config({
-  path: `${path.dirname(require.resolve('@bushidogames/db'))}/.env`,
-});
+import { DiscountModel } from './models/discount.js';
 
 export const sequelize = new Sequelize(
   'moondog_parsers',
-  process.env.MYSQL_USER,
-  process.env.MYSQL_PASS,
+  // process.env.MYSQL_USER,
+  // process.env.MYSQL_PASS,
+  'root',
+  '123qwe',
   {
     logging: false,
-    port: process.env.MYSQL_PORT,
+    // port: process.env.MYSQL_PORT,
+    port: 3307,
     host: '127.0.0.1',
     dialect: 'mysql',
     // todo: setup pool for prod
@@ -30,4 +30,5 @@ export const sequelize = new Sequelize(
 
 export const Product = ProductModel(sequelize, Sequelize);
 export const Category = CategoryModel(sequelize, Sequelize);
+export const Discount = DiscountModel(sequelize, Sequelize);
 export const Op = Sequelize.Op;

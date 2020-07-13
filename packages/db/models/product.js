@@ -9,13 +9,19 @@ export const ProductModel = (sequelize, DataTypes) => {
       type: DataTypes.STRING,
     },
     localId: {
-      type: DataTypes.STRING,
+      type: DataTypes.INTEGER,
     },
     price: {
-      type: DataTypes.STRING,
+      type: DataTypes.DECIMAL(7, 2),
     },
     ceneoPrice: {
-      type: DataTypes.STRING,
+      type: DataTypes.DECIMAL(7, 2),
+    },
+    regularQty: {
+      type: DataTypes.INTEGER,
+    },
+    discountQty: {
+      type: DataTypes.INTEGER,
     },
     ean: {
       type: DataTypes.STRING,
