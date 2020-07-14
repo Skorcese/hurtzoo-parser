@@ -14,14 +14,19 @@ export const ProductModel = (sequelize, DataTypes) => {
     price: {
       type: DataTypes.DECIMAL(7, 2),
     },
+    discountedPrice: {
+      type: DataTypes.DECIMAL(7, 2),
+    },
     ceneoPrice: {
       type: DataTypes.DECIMAL(7, 2),
     },
-    regularQty: {
-      type: DataTypes.INTEGER,
-    },
-    discountQty: {
-      type: DataTypes.INTEGER,
+    discountAmount: {
+      type: DataTypes.VIRTUAL,
+      get() {
+        return (
+          this.getDataValue('discountedPrice') - this.getDataValue('ceneoPrice')
+        );
+      },
     },
     ean: {
       type: DataTypes.STRING,

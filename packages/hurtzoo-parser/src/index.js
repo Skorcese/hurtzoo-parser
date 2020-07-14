@@ -10,10 +10,12 @@ import {
   setProductsPerPageCookie,
 } from './modules/categories.js';
 import { getProducts, storeProducts } from './modules/products.js';
+import { saveInitialDiscounts } from './modules/discount.js';
 
 dotenv.config();
 
 const main = async () => {
+  await saveInitialDiscounts();
   await sequelize.sync({ force: false });
   const { browser, page } = await initBrowser({
     headless: false,
