@@ -1,0 +1,15 @@
+{
+  "name": "@bushidogames/data-display",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "type": "module",
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "html-creator": "^0.4.4",
+    "restify": "^8.5.1",
+    "table-builder": "^2.1.1"
+  }
+}
