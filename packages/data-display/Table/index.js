@@ -1,16 +1,25 @@
 import TableBuilder from 'table-builder';
 import { Product } from '@bushidogames/db';
 
-const renderTable = async () => {
-  const res = await Product.findAll();
+const getData = () => {
+  return Product.findAll({
+    order: [
+      ['discountedPrice', 'DESC'],
+      ['differenceAmount', 'DESC'],
+    ],
+  });
+};
 
+const renderTable = async () => {
   const headers = {
     id: 'id',
     service: 'service',
     name: 'name',
     localId: 'localId',
     price: 'price',
+    discountedPrice: 'discountedPrice',
     ceneoPrice: 'ceneoPrice',
+    differenceAmount: 'discountedAmount',
     ean: 'ean',
     producer: 'producer',
     url: 'url',
@@ -20,10 +29,10 @@ const renderTable = async () => {
     updatedAt: 'updatedAt',
   };
 
-  const Table = new TableBuilder({ class: 'test' });
-  const table = Table.setHeaders(headers).setData(res).render();
+  const data = await getData();
 
-  return table;
+  const Table = new TableBuilder({ class: 'test' });
+  return Table.setHeaders(headers).setData(data).render();
 };
 
 export default renderTable;

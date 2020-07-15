@@ -9,7 +9,7 @@ export const ProductModel = (sequelize, DataTypes) => {
       type: DataTypes.STRING,
     },
     localId: {
-      type: DataTypes.INTEGER,
+      type: DataTypes.STRING,
     },
     price: {
       type: DataTypes.DECIMAL(7, 2),
@@ -20,7 +20,7 @@ export const ProductModel = (sequelize, DataTypes) => {
     ceneoPrice: {
       type: DataTypes.DECIMAL(7, 2),
     },
-    discountAmount: {
+    differenceAmount: {
       type: DataTypes.VIRTUAL,
       get() {
         return (
@@ -39,6 +39,9 @@ export const ProductModel = (sequelize, DataTypes) => {
     },
     imageUrl: {
       type: DataTypes.STRING,
+    },
+    isUncertain: {
+      type: DataTypes.INTEGER,
     },
     visitId: {
       type: DataTypes.INTEGER,

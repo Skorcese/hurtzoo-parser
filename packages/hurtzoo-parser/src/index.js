@@ -1,4 +1,3 @@
-import dotenv from 'dotenv';
 import { close, initBrowser } from '@bushidogames/utils';
 import { sequelize } from '@bushidogames/db';
 import {
@@ -12,11 +11,9 @@ import {
 import { getProducts, storeProducts } from './modules/products.js';
 import { saveInitialDiscounts } from './modules/discount.js';
 
-dotenv.config();
-
 const main = async () => {
+  await sequelize.sync({ force: true });
   await saveInitialDiscounts();
-  await sequelize.sync({ force: false });
   const { browser, page } = await initBrowser({
     headless: false,
   });

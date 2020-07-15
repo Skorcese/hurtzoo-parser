@@ -3,6 +3,7 @@
 import Sequelize from 'sequelize';
 import { ProductModel } from './models/product.js';
 import { CategoryModel } from './models/category.js';
+import { DiscountModel } from './models/discount.js';
 
 export const sequelize = new Sequelize(
   'moondog_parsers',

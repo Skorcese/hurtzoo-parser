@@ -1,10 +1,8 @@
 import restify from 'restify';
-import Table from './Table/index.js';
+import routes from './routes/index.js';
 
-const server = restify.createServer();
+const server = restify.createServer({ name: 'data-display' });
 
-server.get('/', async (req, res, next) => {
-  res.end(`<html><head></head><body>${await Table()}</body></html>`);
-});
+routes(server);
 
 server.listen(3000, () => console.log('Listening on port 3000...'));

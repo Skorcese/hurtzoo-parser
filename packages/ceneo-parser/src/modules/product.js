@@ -1,5 +1,5 @@
 import { Product, Discount, Op } from '@bushidogames/db';
-import { BASE_URL, USER_AGENT } from '../config.js';
+import { BASE_URL, USER_AGENT, SCREENSHOT_PATH } from '../config.js';
 
 export const getPricePerEAN = async (page) => {
   console.log('-------------------------------');
@@ -13,9 +13,9 @@ export const getPricePerEAN = async (page) => {
   const price = await parsePrices(page, url);
   console.log('ceneoPrice: ', price);
 
-  await validatePrice(page, price, product);
+  const validatedProduct = await validatePrice(page, price, product);
 
-  await updateProduct(price, product);
+  await updateProduct(price, validatedProduct);
 
   if (shouldSearchNext(product.visitId)) {
     await getPricePerEAN(page);
@@ -67,10 +67,15 @@ const validatePrice = async (page, price, product) => {
     console.log(
       `Ceneo price higher than 50% of ${product.service} price - ${product.ean}.jpg`,
     );
+
     page.screenshot({
-      path: `./src/screenshots/${product.ean}.jpg`,
+      path: `${SCREENSHOT_PATH}${product.ean}.jpg`,
       fullPage: true,
     });
+
+    return (product.isUncertain = 1);
+  } else {
+    return (product.isUncertain = 0);
   } // TODO: else other validations
 };
 
