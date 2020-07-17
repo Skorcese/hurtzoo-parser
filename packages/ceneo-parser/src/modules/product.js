@@ -1,4 +1,4 @@
-import { Product, Discount, Op } from '@bushidogames/db';
+import { Product, Op } from '@bushidogames/db';
 import { BASE_URL, USER_AGENT, SCREENSHOT_PATH } from '../config.js';
 
 export const getPricePerEAN = async (page) => {
@@ -43,7 +43,7 @@ const parsePrices = async (page, url) => {
     console.log('Price retrieved successfully');
     return getPrices(page, priceSelector);
   } catch (error) {
-    console.log('Product not found');
+    console.log('Product not found or selector did not load');
     return 0;
   }
 };
@@ -63,19 +63,44 @@ const getPrices = async (page, selector) => {
 };
 
 const validatePrice = async (page, price, product) => {
-  if (price / product.price > 0.5) {
+  if (price === 0) {
+    product.isUncertain = 1;
+    return product;
+  } else if (
+    parseFloat(price).toFixed(2) / parseFloat(product.price).toFixed(2) >
+    2
+  ) {
     console.log(
-      `Ceneo price higher than 50% of ${product.service} price - ${product.ean}.jpg`,
+      `Ceneo price twice as high than ${product.service} price - ${product.ean}.jpg`,
     );
 
-    page.screenshot({
-      path: `${SCREENSHOT_PATH}${product.ean}.jpg`,
-      fullPage: true,
-    });
+    //  Error: ENOENT: no such file or directory, open './src/screenshots/4048422102625.jpg'
+    // page.screenshot({
+    //   path: `${SCREENSHOT_PATH}${product.ean}.jpg`,
+    //   fullPage: true,
+    // });
 
-    return (product.isUncertain = 1);
+    product.isUncertain = 1;
+    return product;
+  } else if (
+    parseFloat(price).toFixed(2) / parseFloat(product.price).toFixed(2) >
+    0.5
+  ) {
+    console.log(
+      `Ceneo price twice as low than ${product.service} price - ${product.ean}.jpg`,
+    );
+
+    //  Error: ENOENT: no such file or directory, open './src/screenshots/4048422102625.jpg'
+    // page.screenshot({
+    //   path: `${SCREENSHOT_PATH}${product.ean}.jpg`,
+    //   fullPage: true,
+    // });
+
+    product.isUncertain = 1;
+    return product;
   } else {
-    return (product.isUncertain = 0);
+    product.isUncertain = 0;
+    return product;
   } // TODO: else other validations
 };
 

@@ -23,9 +23,17 @@ export const ProductModel = (sequelize, DataTypes) => {
     differenceAmount: {
       type: DataTypes.VIRTUAL,
       get() {
-        return (
-          this.getDataValue('discountedPrice') - this.getDataValue('ceneoPrice')
-        );
+        const price = this.getDataValue('price');
+        const discountedPrice = this.getDataValue('discountedPrice');
+        const ceneoPrice = this.getDataValue('ceneoPrice');
+
+        return discountedPrice
+          ? parseFloat(discountedPrice - ceneoPrice).toFixed(2)
+          : ceneoPrice === 0
+          ? -1000
+          : ceneoPrice
+          ? parseFloat(price - ceneoPrice).toFixed(2)
+          : -1000;
       },
     },
     ean: {

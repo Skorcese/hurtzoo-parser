@@ -55,4 +55,99 @@ export const saveInitialDiscounts = async () => {
     producer: 'Arion',
     discount_range_max: 14,
   });
+  await Discount.create({
+    service: 'hurtzoo',
+    producer: 'BALBI',
+    discount_range_max: 20,
+  });
+  await Discount.create({
+    service: 'hurtzoo',
+    producer: 'Barry King',
+    discount_range_max: 16,
+  });
+  await Discount.create({
+    service: 'hurtzoo',
+    producer: 'Bazyl',
+    discount_range_max: 25,
+  });
+  await Discount.create({
+    service: 'hurtzoo',
+    producer: 'Beaphar',
+    discount_range_max: 13,
+  });
+  await Discount.create({
+    service: 'hurtzoo',
+    producer: 'Benek',
+    discount_range_max: 24,
+  });
+  await Discount.create({
+    service: 'hurtzoo',
+    producer: 'Biały Kieł',
+    discount_range_max: 22,
+  });
+  await Discount.create({
+    service: 'hurtzoo',
+    producer: 'Bosch',
+    discount_range_max: 25,
+  });
+  await Discount.create({
+    service: 'hurtzoo',
+    producer: 'Brit Animals',
+    discount_range_max: 2,
+  });
+  await Discount.create({
+    service: 'hurtzoo',
+    producer: 'Brit Care',
+    discount_range_max: 18,
+  });
+  await Discount.create({
+    service: 'hurtzoo',
+    producer: 'Brit Fresh',
+    discount_range_max: 0,
+  });
+  await Discount.create({
+    service: 'hurtzoo',
+    producer: `Brit Let's Bite`,
+    discount_range_max: 18,
+  });
+  await Discount.create({
+    service: 'hurtzoo',
+    producer: 'Brit Premium',
+    discount_range_max: 18,
+  });
+  await Discount.create({
+    service: 'hurtzoo',
+    producer: `Butcher's`,
+    discount_range_max: 27,
+  });
+  await Discount.create({
+    service: 'hurtzoo',
+    producer: 'Canagan',
+    discount_range_max: 10,
+  });
+  await Discount.create({
+    service: 'hurtzoo',
+    producer: 'Carnilove',
+    discount_range_max: 2,
+  });
+  await Discount.create({
+    service: 'hurtzoo',
+    producer: `Cat's best`,
+    discount_range_max: 18,
+  });
+  await Discount.create({
+    service: 'hurtzoo',
+    producer: 'Chaba',
+    discount_range_max: 20,
+  });
+  await Discount.create({
+    service: 'hurtzoo',
+    producer: 'Class poidła',
+    discount_range_max: 15,
+  });
+  await Discount.create({
+    service: 'hurtzoo',
+    producer: 'Comfy',
+    discount_range_max: 14,
+  });
 };
