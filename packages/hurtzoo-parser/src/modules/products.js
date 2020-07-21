@@ -1,5 +1,5 @@
 import { DEFAULT_SERVICE, BASE_URL } from '../config.js';
-import { Product } from '@bushidogames/db';
+import { Product, Discount, Op } from '@bushidogames/db';
 
 const getUniquePaginationUrls = (urls) =>
   [...new Set(urls)].filter((url) => !url.match(/javascript/));
@@ -54,13 +54,27 @@ const getProductsFromOnePage = async (page, url) => {
         producer: product.pr_name,
         url: product.url,
         imageUrl: product.main_image,
+        isUncertain: 0,
       };
     });
   });
 };
 
 export const storeProducts = async (allProducts) => {
+  const discount = await Discount.findOne({
+    where: {
+      producer: {
+        [Op.eq]: allProducts[0].producer,
+      },
+    },
+    attributes: ['discount_range_max'],
+  });
+
   const promises = allProducts.map(async (product) => {
+    if (discount)
+      product.discountedPrice =
+        product.price * ((100 - discount.dataValues.discount_range_max) / 100);
+    // przy discount / 100 wyrzuca NaN
     const { localId } = product;
 
     const instance = await Product.findOrCreate({

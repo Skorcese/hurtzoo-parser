@@ -1,8 +1,5 @@
-import { BASE_URL } from '../config.js';
 import { Product, Op } from '@bushidogames/db';
-
-const USER_AGENT =
-  'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/83.0.4103.0 Safari/537.36';
+import { BASE_URL, USER_AGENT, SCREENSHOT_PATH } from '../config.js';
 
 export const getPricePerEAN = async (page) => {
   console.log('-------------------------------');
@@ -16,7 +13,9 @@ export const getPricePerEAN = async (page) => {
   const price = await parsePrices(page, url);
   console.log('ceneoPrice: ', price);
 
-  await updateProduct(price, product);
+  const validatedProduct = await validatePrice(page, price, product);
+
+  await updateProduct(price, validatedProduct);
 
   if (shouldSearchNext(product.visitId)) {
     await getPricePerEAN(page);
@@ -26,7 +25,7 @@ export const getPricePerEAN = async (page) => {
 const getNextEAN = async () => {
   return Product.findOne({
     order: [['visitId', 'ASC']],
-    attributes: ['ean', 'id', 'visitId'],
+    attributes: ['ean', 'id', 'visitId', 'price', 'service', 'name'],
   });
 };
 
@@ -44,7 +43,7 @@ const parsePrices = async (page, url) => {
     console.log('Price retrieved successfully');
     return getPrices(page, priceSelector);
   } catch (error) {
-    console.log('Product not found');
+    console.log('Product not found or selector did not load');
     return 0;
   }
 };
@@ -61,6 +60,48 @@ const getPrices = async (page, selector) => {
 
     return parsed.sort((a, b) => a - b)[0];
   });
+};
+
+const validatePrice = async (page, price, product) => {
+  if (price === 0) {
+    product.isUncertain = 1;
+    return product;
+  } else if (
+    parseFloat(price).toFixed(2) / parseFloat(product.price).toFixed(2) >
+    2
+  ) {
+    console.log(
+      `Ceneo price twice as high than ${product.service} price - ${product.ean}.jpg`,
+    );
+
+    //  Error: ENOENT: no such file or directory, open './src/screenshots/4048422102625.jpg'
+    // page.screenshot({
+    //   path: `${SCREENSHOT_PATH}${product.ean}.jpg`,
+    //   fullPage: true,
+    // });
+
+    product.isUncertain = 1;
+    return product;
+  } else if (
+    parseFloat(price).toFixed(2) / parseFloat(product.price).toFixed(2) >
+    0.5
+  ) {
+    console.log(
+      `Ceneo price twice as low than ${product.service} price - ${product.ean}.jpg`,
+    );
+
+    //  Error: ENOENT: no such file or directory, open './src/screenshots/4048422102625.jpg'
+    // page.screenshot({
+    //   path: `${SCREENSHOT_PATH}${product.ean}.jpg`,
+    //   fullPage: true,
+    // });
+
+    product.isUncertain = 1;
+    return product;
+  } else {
+    product.isUncertain = 0;
+    return product;
+  } // TODO: else other validations
 };
 
 const updateProduct = async (price, product) => {

@@ -12,10 +12,29 @@ export const ProductModel = (sequelize, DataTypes) => {
       type: DataTypes.STRING,
     },
     price: {
-      type: DataTypes.STRING,
+      type: DataTypes.DECIMAL(7, 2),
+    },
+    discountedPrice: {
+      type: DataTypes.DECIMAL(7, 2),
     },
     ceneoPrice: {
-      type: DataTypes.STRING,
+      type: DataTypes.DECIMAL(7, 2),
+    },
+    differenceAmount: {
+      type: DataTypes.VIRTUAL,
+      get() {
+        const price = this.getDataValue('price');
+        const discountedPrice = this.getDataValue('discountedPrice');
+        const ceneoPrice = this.getDataValue('ceneoPrice');
+
+        return discountedPrice
+          ? parseFloat(discountedPrice - ceneoPrice).toFixed(2)
+          : ceneoPrice === 0
+          ? -1000
+          : ceneoPrice
+          ? parseFloat(price - ceneoPrice).toFixed(2)
+          : -1000;
+      },
     },
     ean: {
       type: DataTypes.STRING,
@@ -28,6 +47,9 @@ export const ProductModel = (sequelize, DataTypes) => {
     },
     imageUrl: {
       type: DataTypes.STRING,
+    },
+    isUncertain: {
+      type: DataTypes.INTEGER,
     },
     visitId: {
       type: DataTypes.INTEGER,
