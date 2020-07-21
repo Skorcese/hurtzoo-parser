@@ -6,25 +6,26 @@ const getData = () => {
 };
 
 const sortData = (a, b) => {
-  const aPrice = a.dataValues.discountedPrice || a.dataValues.price;
-  const bPrice = b.dataValues.discountedPrice || b.dataValues.price;
-  const aCeneo = a.dataValues.ceneoPrice || -1000;
-  const bCeneo = b.dataValues.ceneoPrice || -1000;
+  const aVal = a.dataValues.price.replace('.', '');
+  const bVal = b.dataValues.price.replace('.', '');
 
-  const aVal = parseFloat(aPrice).toFixed(2) - parseFloat(aCeneo).toFixed(2);
-  const bVal = parseFloat(bPrice).toFixed(2) - parseFloat(bCeneo).toFixed(2);
-
-  return aVal < bVal ? 1 : -1;
+  return Number(aVal) < Number(bVal) ? 1 : -1;
 };
 
 const filterData = (obj) => {
   return obj.dataValues.ceneoPrice > 0;
 };
 
+const parseData = (obj) => {
+  // obj.ean = `<a href=${obj.ceneoUrl} target="_blank" >${obj.ean}</a>`;
+  obj.url = `<a href=${obj.url} target="_blank" >Link</a>`;
+  return obj;
+};
+
 const renderTable = async () => {
   const headers = {
     id: 'id',
-    localId: 'localId',
+    // localId: 'localId',
     // service: 'service',
     producer: 'producer',
     name: 'name',
@@ -33,10 +34,12 @@ const renderTable = async () => {
     discountedPrice: 'discountedPrice',
     ceneoPrice: 'ceneoPrice',
     differenceAmount: 'differenceAmount',
+    differenceAmountDiscount: 'differenceAmountDiscount',
     isUncertain: 'isUncertain',
     url: 'url',
     // imageUrl: 'imageUrl',
-    visitId: 'visitId',
+    // ceneoUrl: 'ceneoUrl',
+    // visitId: 'visitId',
     // createdAt: 'createdAt',
     // updatedAt: 'updatedAt',
   };
@@ -45,9 +48,10 @@ const renderTable = async () => {
 
   const sortedData = data.sort((a, b) => sortData(a, b));
   const filteredData = sortedData.filter((obj) => filterData(obj));
+  const parsedData = filteredData.map((obj) => parseData(obj));
 
   const Table = new TableBuilder({ class: 'test' });
-  return Table.setHeaders(headers).setData(filteredData).render();
+  return Table.setHeaders(headers).setData(parsedData).render();
 };
 
 export default renderTable;

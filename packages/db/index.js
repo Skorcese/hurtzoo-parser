@@ -9,14 +9,10 @@ export const sequelize = new Sequelize(
   'moondog_parsers',
   process.env.MYSQL_USER,
   process.env.MYSQL_PASS,
-  // 'root',
-  // '123qwe',
   {
     logging: false,
     port: process.env.MYSQL_PORT,
     host: process.env.MYSQL_HOST,
-    // port: 3307,
-    // host: '127.0.0.1',
     dialect: 'mysql',
     // todo: setup pool for prod
     // pool: {
