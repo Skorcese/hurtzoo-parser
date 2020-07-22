@@ -1,6 +1,10 @@
 import { Product, Op } from '@bushidogames/db';
-import { BASE_URL, USER_AGENT, SCREENSHOT_PATH } from '../config.js';
-import cosineSimilarity from '../algorithms/cosineSimilarity.js';
+import {
+  BASE_URL,
+  USER_AGENT,
+  SCREENSHOT_PATH,
+  SERVICE_URL,
+} from '../config.js';
 
 export const getPricePerEAN = async (page) => {
   console.log('-------------------------------');
@@ -9,14 +13,12 @@ export const getPricePerEAN = async (page) => {
 
   await page.goto(`${BASE_URL}+${product.ean}`);
   await page.setUserAgent(USER_AGENT);
+
   const url = await page.url();
 
-  const price = await parsePrices(page, url, product.name);
-  console.log('ceneoPrice: ', price);
+  const item = await getBestItem(page, url);
 
-  const validatedProduct = await validatePrice(page, price, product);
-
-  await updateProduct(price, validatedProduct);
+  await updateProduct(item, product);
 
   if (shouldSearchNext(product.visitId)) {
     await getPricePerEAN(page);
@@ -30,101 +32,86 @@ const getNextEAN = async () => {
   });
 };
 
-const getPriceSelectors = (url) => {
+const getItemSelectors = (url) => {
   return url.includes('/;szukaj')
     ? ['.cat-prod-row', '.alert > .cat-prod-row']
     : ['.category-list', '.category-list-body > .cat-prod-box'];
 };
 
-const parsePrices = async (page, url, serviceName) => {
-  const [isSelectorAvailable, priceSelector] = getPriceSelectors(url);
+const getBestItem = async (page, url) => {
+  const [isSelectorAvailable, containerSelector] = getItemSelectors(url);
 
   try {
-    await page.waitForSelector(isSelectorAvailable);
+    await page.waitForSelector(isSelectorAvailable, {
+      timeout: 8000,
+    });
 
-    const products = getPrices(page, priceSelector);
+    const products = await getItems(page, containerSelector);
 
-    // const nameTest = validateName(products[0].name, serviceName);
-    // console.log(nameTest);
+    const lowest = products.sort((a, b) => a.price - b.price)[0];
 
-    const lowestPrice = products.sort((a, b) => a.price - b.price)[0];
-
-    console.log('Price retrieved successfully');
-    return lowestPrice;
+    return { price: lowest.price, url: lowest.url };
   } catch (error) {
     console.log(error);
-    console.log('Product not found or selector did not load');
+
     return 0;
   }
 };
 
-// IN PROGRESS
-const getPrices = async (page, selector) => {
-  return await page.$$eval(selector, (items) => {
+const getItems = async (page, containerSelector) => {
+  return await page.$$eval(containerSelector, (items) => {
     return items.map((item) => {
+      const name1 = item.querySelector('strong.cat-prod-row__name');
+      const name2 = item.querySelector('strong.cat-prod-box__name');
+      const name = name1 || name2;
       const price = item.querySelector('span.price').textContent;
-      // const name = item.querySelector('strong.cat-prod-row__name').textContent;
-      // const name = item.getAttribute('data-gaproductname');
-      // console.log(name);
+      const url = item.querySelector('a').getAttribute('href');
+
       return {
-        // name: name ? name.trim() : 'empty',
+        name: name.textContent.trim(),
         price: parseFloat(
           price.trim().replace(',', '.').replace(' ', ''),
         ).toFixed(2),
+        url: url,
       };
     });
   });
 };
 
-const validateName = (name, serviceName) => {
-  console.log(name);
-  console.log(serviceName);
-  const cosine = cosineSimilarity(name, serviceName);
-  return cosine;
-};
-
-const validatePrice = async (page, price, product) => {
-  const ceneoPrice = Number(price.toString().replace('.', ''));
-  const servicePrice = Number(product.price.replace('.', ''));
+const isPriceValid = async (page, price, product) => {
+  const ceneoPrice = parseInt(price.toString().replace('.', ''));
+  const servicePrice = parseInt(product.price.toString().replace('.', ''));
+  const comparison = ceneoPrice / servicePrice;
 
   if (ceneoPrice === 0) {
-    product.isUncertain = 1;
-    return product;
-  } else if (ceneoPrice / servicePrice > 2) {
-    console.log(
-      `Ceneo price twice as high than ${product.service} price - ${product.ean}.jpg`,
-    );
-
-    //  Error: ENOENT: no such file or directory, open './src/screenshots/4048422102625.jpg'
-    // page.screenshot({
-    //   path: `${SCREENSHOT_PATH}${product.ean}.jpg`,
-    //   fullPage: true,
-    // });
-
-    product.isUncertain = 1;
-    return product;
-  } else if (ceneoPrice / servicePrice > 0.5) {
-    console.log(
-      `Ceneo price twice as low than ${product.service} price - ${product.ean}.jpg`,
-    );
-
-    //  Error: ENOENT: no such file or directory, open './src/screenshots/4048422102625.jpg'
-    // page.screenshot({
-    //   path: `${SCREENSHOT_PATH}${product.ean}.jpg`,
-    //   fullPage: true,
-    // });
-
-    product.isUncertain = 1;
-    return product;
+    return false;
+  } else if (comparison > 2) {
+    console.log(`Too expensive`);
+    // nadal ENOENT
+    // makeScreenshot(page, product.ean)
+    return false;
+  } else if (comparison < 0.5) {
+    console.log(`Too cheap`);
+    // nadal ENOENT
+    // makeScreenshot(page, product.ean)
+    return false;
   } else {
-    product.isUncertain = 0;
-    return product;
-  } // TODO: else other validations
+    return true;
+  }
 };
 
-const updateProduct = async (price, product) => {
-  product.visitId += 1;
-  product.ceneoPrice = price;
+const makeScreenshot = (page, ean) => {
+  page.screenshot({
+    path: `${SCREENSHOT_PATH}${ean}.jpg`,
+    fullPage: true,
+  });
+};
+
+const updateProduct = async (item, product) => {
+  product.isUncertain = !isPriceValid('page', item.price, product.price);
+  product.visitId = product.visitId += 1;
+  product.url = SERVICE_URL + item.url;
+  product.ceneoPrice = item.price;
   await product.save();
 };
 

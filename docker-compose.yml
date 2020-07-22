@@ -12,6 +12,7 @@ services:
       MYSQL_PASS: 123qwe
       MYSQL_USER: root
       MYSQL_HOST: moondog-parser-db
+      CRON: '10 0 0 0 0 0'
     ports:
       - '3000:3000'
       - '9229:9229'
@@ -41,6 +42,7 @@ services:
       MYSQL_PASS: 123qwe
       MYSQL_USER: root
       MYSQL_HOST: moondog-parser-db
+      SYNC_DB: true
   moondog-parser-db:
     image: mysql
     restart: always

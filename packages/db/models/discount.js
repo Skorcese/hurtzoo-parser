@@ -8,7 +8,7 @@ export const DiscountModel = (sequelize, DataTypes) => {
     producer: {
       type: DataTypes.STRING,
     },
-    discount_range_max: {
+    discountRangeMax: {
       type: DataTypes.INTEGER,
     },
   });

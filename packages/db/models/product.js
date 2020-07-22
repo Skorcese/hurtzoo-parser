@@ -54,7 +54,7 @@ export const ProductModel = (sequelize, DataTypes) => {
     //   type: DataTypes.STRING,
     // },
     isUncertain: {
-      type: DataTypes.INTEGER,
+      type: DataTypes.BOOLEAN,
     },
     visitId: {
       type: DataTypes.INTEGER,

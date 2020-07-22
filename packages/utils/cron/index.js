@@ -1,6 +1,6 @@
 import schedule from 'node-schedule';
 
-export default (ruleString, job) => {
+export const cron = (ruleString, job) => {
   const rule = new schedule.RecurrenceRule();
 
   const format = ruleString.split(' ');

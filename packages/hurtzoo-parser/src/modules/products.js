@@ -1,5 +1,6 @@
 import { DEFAULT_SERVICE, BASE_URL } from '../config.js';
-import { Product, Discount, Op } from '@bushidogames/db';
+import { Product } from '@bushidogames/db';
+import { getDiscount, calculateDiscount } from './discount.js';
 
 const getUniquePaginationUrls = (urls) =>
   [...new Set(urls)].filter((url) => !url.match(/javascript/));
@@ -61,20 +62,12 @@ const getProductsFromOnePage = async (page, url) => {
 };
 
 export const storeProducts = async (allProducts) => {
-  const discount = await Discount.findOne({
-    where: {
-      producer: {
-        [Op.eq]: allProducts[0].producer,
-      },
-    },
-    attributes: ['discount_range_max'],
-  });
+  const discount = await getDiscount(allProducts[0]);
 
   const promises = allProducts.map(async (product) => {
     if (discount)
-      product.discountedPrice =
-        product.price * ((100 - discount.dataValues.discount_range_max) / 100);
-    // przy discount / 100 wyrzuca NaN
+      product.discountedPrice = calculateDiscount(product, discount);
+
     const { localId } = product;
 
     const instance = await Product.findOrCreate({
