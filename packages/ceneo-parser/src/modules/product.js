@@ -64,9 +64,9 @@ const getBestItem = async (page, url) => {
 const getItems = async (page, containerSelector) => {
   return await page.$$eval(containerSelector, (items) => {
     return items.map((item) => {
-      const name1 = item.querySelector('strong.cat-prod-row__name');
-      const name2 = item.querySelector('strong.cat-prod-box__name');
-      const name = name1 || name2;
+      const name = item.querySelector(
+        'strong.cat-prod-row__name, strong.cat-prod-box__name',
+      );
       const price = item.querySelector('span.price').innerText;
 
       return {
