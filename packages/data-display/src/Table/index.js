@@ -1,4 +1,4 @@
-import TableBuilder from 'table-builder';
+// import TableBuilder from 'table-builder';
 import { Product } from '@bushidogames/db';
 
 const BASE_URL = 'https://www.ceneo.pl/;szukaj-';
@@ -22,7 +22,19 @@ const TABLE_HEADERS = {
   // updatedAt: 'updatedAt',
 };
 
-const getData = () => Product.findAll();
+const getData = (sortBy) => {
+  const lim = 100;
+
+  if (!sortBy)
+    return Product.findAll({
+      limit: lim,
+    });
+
+  return Product.findAll({
+    order: [[sortBy.sortColumnName, sortBy.sortOrder]],
+    limit: lim,
+  });
+};
 
 const sortData = (a, b) => parseInt(b.price) - parseInt(a.price);
 
@@ -34,13 +46,39 @@ const parseData = (obj) => {
   return obj;
 };
 
-const renderTable = async () => {
-  const data = await getData();
+const renderTable = async (sortBy) => {
+  const data = await getData(sortBy);
+  // .sort(sortData)
+  const parsedData = data.filter(filterData).map(parseData);
 
-  const parsedData = data.sort(sortData).filter(filterData).map(parseData);
+  const tableData = Object.values(parsedData).map((product) =>
+    Object.keys(TABLE_HEADERS).map((key) => product[key]),
+  );
 
-  const table = new TableBuilder({ class: 'test' });
-  return table.setHeaders(TABLE_HEADERS).setData(parsedData).render();
+  const tableHeaders = Object.keys(TABLE_HEADERS);
+
+  const sortButtons = (header) =>
+    `<a href='?sortColumnName=${header}&sortOrder=ASC'>🔼</a>
+    <a href='?sortColumnName=${header}&sortOrder=DESC'>🔽</a>`;
+
+  const headers = tableHeaders
+    .map((header) => `<th>${header}${sortButtons(header)}</th>`)
+    .join('');
+
+  const rows = tableData
+    .map((row) => `<tr><td>${row.join('</td><td>')}</td></tr>`)
+    .join('');
+
+  return `
+    <table>
+      <thead>
+      <tr>
+        ${headers}
+      </tr>
+      </thead>
+      ${rows}
+    </table>
+  `;
 };
 
 export default renderTable;
