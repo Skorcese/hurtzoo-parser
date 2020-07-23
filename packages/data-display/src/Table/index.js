@@ -24,7 +24,7 @@ const TABLE_HEADERS = {
 
 const getData = () => Product.findAll();
 
-const sortData = (a, b) => (a.price < b.price ? 1 : -1);
+const sortData = (a, b) => (parseInt(a.price) < parseInt(b.price) ? 1 : -1);
 
 const filterData = (obj) => obj.isUncertain === false;
 
