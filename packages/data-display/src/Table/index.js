@@ -1,53 +1,46 @@
 import TableBuilder from 'table-builder';
 import { Product } from '@bushidogames/db';
 
-const getData = () => {
-  return Product.findAll();
+const BASE_URL = 'https://www.ceneo.pl/;szukaj-';
+const TABLE_HEADERS = {
+  id: 'id',
+  // localId: 'localId',
+  // service: 'service',
+  producer: 'producer',
+  name: 'name',
+  ean: 'ean',
+  price: 'price',
+  discountedPrice: 'discountedPrice',
+  ceneoPrice: 'ceneoPrice',
+  differenceAmount: 'differenceAmount',
+  differenceAmountDiscount: 'differenceAmountDiscount',
+  isUncertain: 'isUncertain',
+  url: 'url',
+  // imageUrl: 'imageUrl',
+  // visitId: 'visitId',
+  // createdAt: 'createdAt',
+  // updatedAt: 'updatedAt',
 };
 
-const sortData = (a, b) => {
-  const aPrice = a.dataValues.discountedPrice || a.dataValues.price;
-  const bPrice = b.dataValues.discountedPrice || b.dataValues.price;
-  const aCeneo = a.dataValues.ceneoPrice || -1000;
-  const bCeneo = b.dataValues.ceneoPrice || -1000;
+const getData = () => Product.findAll();
 
-  const aVal = parseFloat(aPrice).toFixed(2) - parseFloat(aCeneo).toFixed(2);
-  const bVal = parseFloat(bPrice).toFixed(2) - parseFloat(bCeneo).toFixed(2);
+const sortData = (a, b) => parseInt(b.price) - parseInt(a.price);
 
-  return aVal < bVal ? 1 : -1;
-};
+const filterData = (obj) => obj.isUncertain === false;
 
-const filterData = (obj) => {
-  return obj.dataValues.ceneoPrice > 0;
+const parseData = (obj) => {
+  obj.ean = `<a href=${BASE_URL}${obj.ean} target="_blank" >${obj.ean}</a>`;
+  obj.url = `<a href=${obj.url} target="_blank" >Link</a>`;
+  return obj;
 };
 
 const renderTable = async () => {
-  const headers = {
-    id: 'id',
-    localId: 'localId',
-    // service: 'service',
-    producer: 'producer',
-    name: 'name',
-    ean: 'ean',
-    price: 'price',
-    discountedPrice: 'discountedPrice',
-    ceneoPrice: 'ceneoPrice',
-    differenceAmount: 'differenceAmount',
-    isUncertain: 'isUncertain',
-    url: 'url',
-    // imageUrl: 'imageUrl',
-    visitId: 'visitId',
-    // createdAt: 'createdAt',
-    // updatedAt: 'updatedAt',
-  };
-
   const data = await getData();
 
-  const sortedData = data.sort((a, b) => sortData(a, b));
-  const filteredData = sortedData.filter((obj) => filterData(obj));
+  const parsedData = data.sort(sortData).filter(filterData).map(parseData);
 
-  const Table = new TableBuilder({ class: 'test' });
-  return Table.setHeaders(headers).setData(filteredData).render();
+  const table = new TableBuilder({ class: 'test' });
+  return table.setHeaders(TABLE_HEADERS).setData(parsedData).render();
 };
 
 export default renderTable;

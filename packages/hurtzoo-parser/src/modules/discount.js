@@ -1,4 +1,18 @@
 import { Discount } from '@bushidogames/db';
+
+export const getDiscount = (product) =>
+  Discount.findOne({
+    where: {
+      producer: {
+        [Op.eq]: product.producer,
+      },
+    },
+    attributes: ['discountRangeMax'],
+  });
+
+export const calculateDiscount = (product, discount) =>
+  product.price * ((100 - discount.discountRangeMax) / 100);
+
 export const saveInitialDiscounts = async () => {
   await Discount.create({
     service: 'hurtzoo',

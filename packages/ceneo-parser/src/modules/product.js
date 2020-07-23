@@ -8,14 +8,12 @@ export const getPricePerEAN = async (page) => {
 
   await page.goto(`${BASE_URL}+${product.ean}`);
   await page.setUserAgent(USER_AGENT);
+
   const url = await page.url();
 
-  const price = await parsePrices(page, url);
-  console.log('ceneoPrice: ', price);
+  const item = await getBestItem(page, url);
 
-  const validatedProduct = await validatePrice(page, price, product);
-
-  await updateProduct(price, validatedProduct);
+  await updateProduct(page, item, product);
 
   if (shouldSearchNext(product.visitId)) {
     await getPricePerEAN(page);
@@ -29,84 +27,94 @@ const getNextEAN = async () => {
   });
 };
 
-const getPriceSelectors = (url) => {
+const getItemSelectors = (url) => {
+  console.log(url);
   return url.includes('/;szukaj')
     ? ['.cat-prod-row', '.alert > .cat-prod-row']
     : ['.category-list', '.category-list-body > .cat-prod-box'];
 };
 
-const parsePrices = async (page, url) => {
-  const [isSelectorAvailable, priceSelector] = getPriceSelectors(url);
+const getBestItem = async (page, url) => {
+  const [isSelectorAvailable, containerSelector] = getItemSelectors(url);
 
   try {
-    await page.waitForSelector(isSelectorAvailable);
-    console.log('Price retrieved successfully');
-    return getPrices(page, priceSelector);
+    await page.waitForSelector(isSelectorAvailable, {
+      timeout: 8000,
+    });
+
+    const products = await getItems(page, containerSelector);
+    const parsedProducts = products.map(({ name, price }) => ({
+      name: name,
+      price: parseFloat(price.replace(',', '.').replace(' ', '')).toFixed(2),
+    }));
+
+    // TODO name filtering here
+
+    const lowest = parsedProducts.sort((a, b) => a.price - b.price)[0];
+
+    return lowest === undefined || lowest.length == 0
+      ? { price: 0 }
+      : { price: lowest.price };
   } catch (error) {
-    console.log('Product not found or selector did not load');
-    return 0;
+    console.log(error);
+    return { price: 0 };
   }
 };
 
-const getPrices = async (page, selector) => {
-  return await page.$$eval(selector, (items) => {
-    const parsed = items.map((item) => {
-      const price = item.querySelector('span.price').textContent;
+const getItems = async (page, containerSelector) => {
+  return await page.$$eval(containerSelector, (items) => {
+    return items.map((item) => {
+      const name = item.querySelector(
+        'strong.cat-prod-row__name, strong.cat-prod-box__name',
+      );
+      const price = item.querySelector('span.price').innerText;
 
-      return parseFloat(
-        price.trim().replace(',', '.').replace(' ', ''),
-      ).toFixed(2);
+      return {
+        name: name.innerText,
+        price: price,
+      };
     });
-
-    return parsed.sort((a, b) => a - b)[0];
   });
 };
 
-const validatePrice = async (page, price, product) => {
-  if (price === 0) {
-    product.isUncertain = 1;
-    return product;
-  } else if (
-    parseFloat(price).toFixed(2) / parseFloat(product.price).toFixed(2) >
-    2
-  ) {
-    console.log(
-      `Ceneo price twice as high than ${product.service} price - ${product.ean}.jpg`,
-    );
+const isPriceValid = async (page, cPrice, productPrice, ean) => {
+  const ceneoPrice = parseInt(cPrice);
+  const servicePrice = parseInt(productPrice);
+  const comparison = ceneoPrice / servicePrice;
 
-    //  Error: ENOENT: no such file or directory, open './src/screenshots/4048422102625.jpg'
-    // page.screenshot({
-    //   path: `${SCREENSHOT_PATH}${product.ean}.jpg`,
-    //   fullPage: true,
-    // });
+  if (comparison > 2) {
+    console.log(`Too expensive`);
+    makeScreenshot(page, ean);
+    return false;
+  }
 
-    product.isUncertain = 1;
-    return product;
-  } else if (
-    parseFloat(price).toFixed(2) / parseFloat(product.price).toFixed(2) >
-    0.5
-  ) {
-    console.log(
-      `Ceneo price twice as low than ${product.service} price - ${product.ean}.jpg`,
-    );
+  if (comparison < 0.5) {
+    console.log(`Too cheap`);
+    makeScreenshot(page, ean);
+    return false;
+  }
 
-    //  Error: ENOENT: no such file or directory, open './src/screenshots/4048422102625.jpg'
-    // page.screenshot({
-    //   path: `${SCREENSHOT_PATH}${product.ean}.jpg`,
-    //   fullPage: true,
-    // });
-
-    product.isUncertain = 1;
-    return product;
-  } else {
-    product.isUncertain = 0;
-    return product;
-  } // TODO: else other validations
+  return true;
 };
 
-const updateProduct = async (price, product) => {
+const makeScreenshot = (page, ean) => {
+  page.screenshot({
+    path: `${process.env.PWD}${SCREENSHOT_PATH}${ean}.jpg`,
+    fullPage: true,
+  });
+};
+
+const updateProduct = async (page, item, product) => {
+  console.log('ceneoPrice: ', item.price);
+  console.log('hurtZooPrice: ', product.price);
+  product.isUncertain = !isPriceValid(
+    page,
+    item.price,
+    product.price,
+    product.ean,
+  );
   product.visitId += 1;
-  product.ceneoPrice = price;
+  product.ceneoPrice = item.price;
   await product.save();
 };
 

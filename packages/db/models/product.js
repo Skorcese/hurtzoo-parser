@@ -23,17 +23,19 @@ export const ProductModel = (sequelize, DataTypes) => {
     differenceAmount: {
       type: DataTypes.VIRTUAL,
       get() {
-        const price = this.getDataValue('price');
-        const discountedPrice = this.getDataValue('discountedPrice');
         const ceneoPrice = this.getDataValue('ceneoPrice');
+        const price = this.getDataValue('price');
 
-        return discountedPrice
-          ? parseFloat(discountedPrice - ceneoPrice).toFixed(2)
-          : ceneoPrice === 0
-          ? -1000
-          : ceneoPrice
-          ? parseFloat(price - ceneoPrice).toFixed(2)
-          : -1000;
+        return parseFloat(ceneoPrice - price).toFixed(2);
+      },
+    },
+    differenceAmountDiscount: {
+      type: DataTypes.VIRTUAL,
+      get() {
+        const ceneoPrice = this.getDataValue('ceneoPrice');
+        const discountedPrice = this.getDataValue('discountedPrice');
+
+        return parseFloat(ceneoPrice - discountedPrice).toFixed(2);
       },
     },
     ean: {
@@ -49,7 +51,8 @@ export const ProductModel = (sequelize, DataTypes) => {
       type: DataTypes.STRING,
     },
     isUncertain: {
-      type: DataTypes.INTEGER,
+      type: DataTypes.BOOLEAN,
+      defaultValue: true,
     },
     visitId: {
       type: DataTypes.INTEGER,
