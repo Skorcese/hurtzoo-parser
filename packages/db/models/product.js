@@ -50,11 +50,9 @@ export const ProductModel = (sequelize, DataTypes) => {
     imageUrl: {
       type: DataTypes.STRING,
     },
-    // ceneoUrl: {
-    //   type: DataTypes.STRING,
-    // },
     isUncertain: {
       type: DataTypes.BOOLEAN,
+      defaultValue: true,
     },
     visitId: {
       type: DataTypes.INTEGER,

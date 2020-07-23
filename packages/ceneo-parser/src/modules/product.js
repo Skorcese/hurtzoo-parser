@@ -1,10 +1,5 @@
 import { Product, Op } from '@bushidogames/db';
-import {
-  BASE_URL,
-  USER_AGENT,
-  SCREENSHOT_PATH,
-  SERVICE_URL,
-} from '../config.js';
+import { BASE_URL, USER_AGENT, SCREENSHOT_PATH } from '../config.js';
 
 export const getPricePerEAN = async (page) => {
   console.log('-------------------------------');
@@ -18,7 +13,7 @@ export const getPricePerEAN = async (page) => {
 
   const item = await getBestItem(page, url);
 
-  await updateProduct(item, product);
+  await updateProduct(page, item, product);
 
   if (shouldSearchNext(product.visitId)) {
     await getPricePerEAN(page);
@@ -33,6 +28,7 @@ const getNextEAN = async () => {
 };
 
 const getItemSelectors = (url) => {
+  console.log(url);
   return url.includes('/;szukaj')
     ? ['.cat-prod-row', '.alert > .cat-prod-row']
     : ['.category-list', '.category-list-body > .cat-prod-box'];
@@ -47,14 +43,21 @@ const getBestItem = async (page, url) => {
     });
 
     const products = await getItems(page, containerSelector);
+    const parsedProducts = products.map(({ name, price }) => ({
+      name: name,
+      price: parseFloat(price.replace(',', '.').replace(' ', '')).toFixed(2),
+    }));
 
-    const lowest = products.sort((a, b) => a.price - b.price)[0];
+    // TODO name filtering here
 
-    return { price: lowest.price, url: lowest.url };
+    const lowest = parsedProducts.sort((a, b) => a.price - b.price)[0];
+
+    return lowest === undefined || lowest.length == 0
+      ? { price: 0 }
+      : { price: lowest.price };
   } catch (error) {
     console.log(error);
-
-    return 0;
+    return { price: 0 };
   }
 };
 
@@ -64,53 +67,53 @@ const getItems = async (page, containerSelector) => {
       const name1 = item.querySelector('strong.cat-prod-row__name');
       const name2 = item.querySelector('strong.cat-prod-box__name');
       const name = name1 || name2;
-      const price = item.querySelector('span.price').textContent;
-      const url = item.querySelector('a').getAttribute('href');
+      const price = item.querySelector('span.price').innerText;
 
       return {
-        name: name.textContent.trim(),
-        price: parseFloat(
-          price.trim().replace(',', '.').replace(' ', ''),
-        ).toFixed(2),
-        url: url,
+        name: name.innerText,
+        price: price,
       };
     });
   });
 };
 
-const isPriceValid = async (page, price, product) => {
-  const ceneoPrice = parseInt(price.toString().replace('.', ''));
-  const servicePrice = parseInt(product.price.toString().replace('.', ''));
+const isPriceValid = async (page, cPrice, productPrice, ean) => {
+  const ceneoPrice = parseInt(cPrice);
+  const servicePrice = parseInt(productPrice);
   const comparison = ceneoPrice / servicePrice;
 
-  if (ceneoPrice === 0) {
-    return false;
-  } else if (comparison > 2) {
+  if (comparison > 2) {
     console.log(`Too expensive`);
-    // nadal ENOENT
-    // makeScreenshot(page, product.ean)
+    makeScreenshot(page, ean);
     return false;
-  } else if (comparison < 0.5) {
-    console.log(`Too cheap`);
-    // nadal ENOENT
-    // makeScreenshot(page, product.ean)
-    return false;
-  } else {
-    return true;
   }
+
+  if (comparison < 0.5) {
+    console.log(`Too cheap`);
+    makeScreenshot(page, ean);
+    return false;
+  }
+
+  return true;
 };
 
 const makeScreenshot = (page, ean) => {
   page.screenshot({
-    path: `${SCREENSHOT_PATH}${ean}.jpg`,
+    path: `${process.env.PWD}${SCREENSHOT_PATH}${ean}.jpg`,
     fullPage: true,
   });
 };
 
-const updateProduct = async (item, product) => {
-  product.isUncertain = !isPriceValid('page', item.price, product.price);
-  product.visitId = product.visitId += 1;
-  product.url = SERVICE_URL + item.url;
+const updateProduct = async (page, item, product) => {
+  console.log('ceneoPrice: ', item.price);
+  console.log('hurtZooPrice: ', product.price);
+  product.isUncertain = !isPriceValid(
+    page,
+    item.price,
+    product.price,
+    product.ean,
+  );
+  product.visitId += 1;
   product.ceneoPrice = item.price;
   await product.save();
 };
