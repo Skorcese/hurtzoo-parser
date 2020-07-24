@@ -10,8 +10,7 @@ const getData = (sortBy) => {
   });
 };
 
-const shouldSort = (sortColumnName) =>
-  VIRTUAL.includes(sortColumnName) ? true : false;
+const shouldSort = (sortColumnName) => VIRTUAL.includes(sortColumnName);
 
 const filterData = (obj) => obj.isUncertain === false;
 
