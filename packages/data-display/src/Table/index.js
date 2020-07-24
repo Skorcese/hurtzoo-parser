@@ -41,8 +41,7 @@ const sortData = (a, b, sortBy) => {
   const aVal = a[sortColumnName];
   const bVal = b[sortColumnName];
 
-  if (VIRTUAL.includes(sortColumnName))
-    return sortOrder === 'ASC' ? aVal - bVal : bVal - aVal;
+  return sortOrder === 'ASC' ? aVal - bVal : bVal - aVal;
 };
 
 const parseData = (obj) => {
@@ -54,10 +53,12 @@ const parseData = (obj) => {
 const renderTable = async (sortBy) => {
   const data = await getData(sortBy);
 
-  const parsedData = data
-    .filter(filterData)
-    .sort((a, b) => sortData(a, b, sortBy))
-    .map(parseData);
+  const parsedData = VIRTUAL.includes(sortBy.sortColumnName)
+    ? data
+        .filter(filterData)
+        .sort((a, b) => sortData(a, b, sortBy))
+        .map(parseData)
+    : data.filter(filterData).map(parseData);
 
   const tableData = Object.values(parsedData).map((product) =>
     Object.keys(TABLE_HEADERS).map((key) => product[key]),
