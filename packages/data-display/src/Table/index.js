@@ -1,32 +1,26 @@
-import TableBuilder from 'table-builder';
 import { Product } from '@bushidogames/db';
+import { TABLE_HEADERS, VIRTUAL, BASE_URL } from '../config.js';
 
-const BASE_URL = 'https://www.ceneo.pl/;szukaj-';
-const TABLE_HEADERS = {
-  id: 'id',
-  // localId: 'localId',
-  // service: 'service',
-  producer: 'producer',
-  name: 'name',
-  ean: 'ean',
-  price: 'price',
-  discountedPrice: 'discountedPrice',
-  ceneoPrice: 'ceneoPrice',
-  differenceAmount: 'differenceAmount',
-  differenceAmountDiscount: 'differenceAmountDiscount',
-  isUncertain: 'isUncertain',
-  url: 'url',
-  // imageUrl: 'imageUrl',
-  // visitId: 'visitId',
-  // createdAt: 'createdAt',
-  // updatedAt: 'updatedAt',
+const getData = (sortBy) => {
+  const { sortColumnName, sortOrder } = sortBy;
+  const order = shouldSort(sortColumnName) ? [] : [[sortColumnName, sortOrder]];
+
+  return Product.findAll({
+    order,
+  });
 };
 
-const getData = () => Product.findAll();
-
-const sortData = (a, b) => parseInt(b.price) - parseInt(a.price);
+const shouldSort = (sortColumnName) => VIRTUAL.includes(sortColumnName);
 
 const filterData = (obj) => obj.isUncertain === false;
+
+const sortData = (a, b, sortBy) => {
+  const { sortColumnName, sortOrder } = sortBy;
+  const aVal = a[sortColumnName];
+  const bVal = b[sortColumnName];
+
+  return sortOrder === 'ASC' ? aVal - bVal : bVal - aVal;
+};
 
 const parseData = (obj) => {
   obj.ean = `<a href=${BASE_URL}${obj.ean} target="_blank" >${obj.ean}</a>`;
@@ -34,13 +28,43 @@ const parseData = (obj) => {
   return obj;
 };
 
-const renderTable = async () => {
-  const data = await getData();
+const renderTable = async (sortBy) => {
+  const data = await getData(sortBy);
 
-  const parsedData = data.sort(sortData).filter(filterData).map(parseData);
+  if (shouldSort(sortBy.sortColumnName)) {
+    data.sort((a, b) => sortData(a, b, sortBy));
+  }
 
-  const table = new TableBuilder({ class: 'test' });
-  return table.setHeaders(TABLE_HEADERS).setData(parsedData).render();
+  const parsedData = data.filter(filterData).map(parseData);
+
+  const tableData = Object.values(parsedData).map((product) =>
+    Object.keys(TABLE_HEADERS).map((key) => product[key]),
+  );
+
+  const sortButtons = (headerKey) =>
+    `<a href='?sortColumnName=${headerKey}&sortOrder=ASC'>🔼</a>
+    <a href='?sortColumnName=${headerKey}&sortOrder=DESC'>🔽</a>`;
+
+  const headers = Object.entries(TABLE_HEADERS)
+    .map(([key, name]) => `<th>${name}${sortButtons(key)}</th>`)
+    .join('');
+
+  const rows = tableData
+    .map((row) => `<tr><td>${row.join('</td><td>')}</td></tr>`)
+    .join('');
+
+  return `
+    <table>
+      <thead>
+        <tr>
+          ${headers}
+        </tr>
+      </thead>
+      <tbody>
+        ${rows}
+      </tbody>
+    </table>
+  `;
 };
 
 export default renderTable;
