@@ -12,8 +12,8 @@ const TABLE_HEADERS = {
   price: 'price',
   discountedPrice: 'discountedPrice',
   ceneoPrice: 'ceneoPrice',
-  differenceAmount: 'differenceAmount',
-  differenceAmountDiscount: 'differenceAmountDiscount',
+  differenceAmount: 'diffAmount',
+  differenceAmountDiscount: 'diffAmountDiscount',
   isUncertain: 'isUncertain',
   url: 'url',
   // imageUrl: 'imageUrl',
@@ -22,23 +22,23 @@ const TABLE_HEADERS = {
   // updatedAt: 'updatedAt',
 };
 
-const getData = (sortBy) => {
-  const lim = 100;
-
-  if (!sortBy)
-    return Product.findAll({
-      limit: lim,
-    });
+const getData = () => {
+  const lim = 10000;
 
   return Product.findAll({
-    order: [[sortBy.sortColumnName, sortBy.sortOrder]],
     limit: lim,
   });
 };
 
-const sortData = (a, b) => parseInt(b.price) - parseInt(a.price);
-
 const filterData = (obj) => obj.isUncertain === false;
+
+const sortData = (a, b, sortBy) => {
+  const { sortColumnName, sortOrder } = sortBy;
+
+  return sortOrder === 'ASC'
+    ? a[sortColumnName] - b[sortColumnName]
+    : b[sortColumnName] - a[sortColumnName];
+};
 
 const parseData = (obj) => {
   obj.ean = `<a href=${BASE_URL}${obj.ean} target="_blank" >${obj.ean}</a>`;
@@ -47,22 +47,23 @@ const parseData = (obj) => {
 };
 
 const renderTable = async (sortBy) => {
-  const data = await getData(sortBy);
-  // .sort(sortData)
-  const parsedData = data.filter(filterData).map(parseData);
+  const data = await getData();
+
+  const parsedData = data
+    .filter(filterData)
+    .sort((a, b) => sortData(a, b, sortBy))
+    .map(parseData);
 
   const tableData = Object.values(parsedData).map((product) =>
     Object.keys(TABLE_HEADERS).map((key) => product[key]),
   );
 
-  const tableHeaders = Object.keys(TABLE_HEADERS);
-
   const sortButtons = (header) =>
     `<a href='?sortColumnName=${header}&sortOrder=ASC'>🔼</a>
     <a href='?sortColumnName=${header}&sortOrder=DESC'>🔽</a>`;
 
-  const headers = tableHeaders
-    .map((header) => `<th>${header}${sortButtons(header)}</th>`)
+  const headers = Object.entries(TABLE_HEADERS)
+    .map((header) => `<th>${header[1]}${sortButtons(header[0])}</th>`)
     .join('');
 
   const rows = tableData
@@ -72,11 +73,13 @@ const renderTable = async (sortBy) => {
   return `
     <table>
       <thead>
-      <tr>
-        ${headers}
-      </tr>
+        <tr>
+          ${headers}
+        </tr>
       </thead>
-      ${rows}
+      <tbody>
+        ${rows}
+      </tbody>
     </table>
   `;
 };
