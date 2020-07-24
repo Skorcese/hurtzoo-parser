@@ -12,7 +12,7 @@ services:
       MYSQL_PASS: 123qwe
       MYSQL_USER: root
       MYSQL_HOST: moondog-parser-db
-      CRON: '10 0 0 0 0 0'
+      CRON: '* * * * *'
     ports:
       - '3000:3000'
       - '9229:9229'
@@ -28,6 +28,7 @@ services:
       MYSQL_PASS: 123qwe
       MYSQL_USER: root
       MYSQL_HOST: moondog-parser-db
+      CRON: '* * * * *'
     ports:
       - '9230:9229'
   hurtzoo-parser:

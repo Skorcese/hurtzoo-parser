@@ -1,6 +1,7 @@
 import { Product } from '@bushidogames/db';
 
 const BASE_URL = 'https://www.ceneo.pl/;szukaj-';
+
 const TABLE_HEADERS = {
   id: 'id',
   // localId: 'localId',
@@ -21,23 +22,27 @@ const TABLE_HEADERS = {
   // updatedAt: 'updatedAt',
 };
 
-const getData = () => {
-  return Product.findAll();
+const VIRTUAL = ['differenceAmount', 'differenceAmountDiscount'];
+
+const getData = (sortBy) => {
+  const { sortColumnName, sortOrder } = sortBy;
+
+  if (VIRTUAL.includes(sortColumnName)) return Product.findAll();
+
+  return Product.findAll({
+    order: [[sortColumnName, sortOrder]],
+  });
 };
 
 const filterData = (obj) => obj.isUncertain === false;
 
 const sortData = (a, b, sortBy) => {
   const { sortColumnName, sortOrder } = sortBy;
+  const aVal = a[sortColumnName];
+  const bVal = b[sortColumnName];
 
-  if (['name', 'producer'].includes(sortColumnName))
-    return sortOrder === 'ASC'
-      ? a[sortColumnName].localeCompare(b[sortColumnName])
-      : b[sortColumnName].localeCompare(a[sortColumnName]);
-
-  return sortOrder === 'ASC'
-    ? a[sortColumnName] - b[sortColumnName]
-    : b[sortColumnName] - a[sortColumnName];
+  if (VIRTUAL.includes(sortColumnName))
+    return sortOrder === 'ASC' ? aVal - bVal : bVal - aVal;
 };
 
 const parseData = (obj) => {
@@ -47,7 +52,7 @@ const parseData = (obj) => {
 };
 
 const renderTable = async (sortBy) => {
-  const data = await getData();
+  const data = await getData(sortBy);
 
   const parsedData = data
     .filter(filterData)
@@ -58,12 +63,12 @@ const renderTable = async (sortBy) => {
     Object.keys(TABLE_HEADERS).map((key) => product[key]),
   );
 
-  const sortButtons = (header) =>
-    `<a href='?sortColumnName=${header}&sortOrder=ASC'>🔼</a>
-    <a href='?sortColumnName=${header}&sortOrder=DESC'>🔽</a>`;
+  const sortButtons = (headerKey) =>
+    `<a href='?sortColumnName=${headerKey}&sortOrder=ASC'>🔼</a>
+    <a href='?sortColumnName=${headerKey}&sortOrder=DESC'>🔽</a>`;
 
   const headers = Object.entries(TABLE_HEADERS)
-    .map((header) => `<th>${header[1]}${sortButtons(header[0])}</th>`)
+    .map(([key, name]) => `<th>${name}${sortButtons(key)}</th>`)
     .join('');
 
   const rows = tableData
