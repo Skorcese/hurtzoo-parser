@@ -1,4 +1,3 @@
-// import TableBuilder from 'table-builder';
 import { Product } from '@bushidogames/db';
 
 const BASE_URL = 'https://www.ceneo.pl/;szukaj-';
@@ -23,17 +22,18 @@ const TABLE_HEADERS = {
 };
 
 const getData = () => {
-  const lim = 10000;
-
-  return Product.findAll({
-    limit: lim,
-  });
+  return Product.findAll();
 };
 
 const filterData = (obj) => obj.isUncertain === false;
 
 const sortData = (a, b, sortBy) => {
   const { sortColumnName, sortOrder } = sortBy;
+
+  if (['name', 'producer'].includes(sortColumnName))
+    return sortOrder === 'ASC'
+      ? a[sortColumnName].localeCompare(b[sortColumnName])
+      : b[sortColumnName].localeCompare(a[sortColumnName]);
 
   return sortOrder === 'ASC'
     ? a[sortColumnName] - b[sortColumnName]
