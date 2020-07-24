@@ -1,38 +1,17 @@
 import { Product } from '@bushidogames/db';
-
-const BASE_URL = 'https://www.ceneo.pl/;szukaj-';
-
-const TABLE_HEADERS = {
-  id: 'id',
-  // localId: 'localId',
-  // service: 'service',
-  producer: 'producer',
-  name: 'name',
-  ean: 'ean',
-  price: 'price',
-  discountedPrice: 'discountedPrice',
-  ceneoPrice: 'ceneoPrice',
-  differenceAmount: 'diffAmount',
-  differenceAmountDiscount: 'diffAmountDiscount',
-  isUncertain: 'isUncertain',
-  url: 'url',
-  // imageUrl: 'imageUrl',
-  // visitId: 'visitId',
-  // createdAt: 'createdAt',
-  // updatedAt: 'updatedAt',
-};
-
-const VIRTUAL = ['differenceAmount', 'differenceAmountDiscount'];
+import { TABLE_HEADERS, VIRTUAL, BASE_URL } from '../config.js';
 
 const getData = (sortBy) => {
   const { sortColumnName, sortOrder } = sortBy;
-
-  if (VIRTUAL.includes(sortColumnName)) return Product.findAll();
+  const order = shouldSort(sortColumnName) ? [] : [[sortColumnName, sortOrder]];
 
   return Product.findAll({
-    order: [[sortColumnName, sortOrder]],
+    order,
   });
 };
+
+const shouldSort = (sortColumnName) =>
+  VIRTUAL.includes(sortColumnName) ? true : false;
 
 const filterData = (obj) => obj.isUncertain === false;
 
@@ -53,12 +32,11 @@ const parseData = (obj) => {
 const renderTable = async (sortBy) => {
   const data = await getData(sortBy);
 
-  const parsedData = VIRTUAL.includes(sortBy.sortColumnName)
-    ? data
-        .filter(filterData)
-        .sort((a, b) => sortData(a, b, sortBy))
-        .map(parseData)
-    : data.filter(filterData).map(parseData);
+  if (shouldSort(sortBy.sortColumnName)) {
+    data.sort((a, b) => sortData(a, b, sortBy));
+  }
+
+  const parsedData = data.filter(filterData).map(parseData);
 
   const tableData = Object.values(parsedData).map((product) =>
     Object.keys(TABLE_HEADERS).map((key) => product[key]),
