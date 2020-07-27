@@ -1,4 +1,4 @@
-import { Discount } from '@bushidogames/db';
+import { Discount, Op } from '@bushidogames/db';
 
 export const getDiscount = (product) =>
   Discount.findOne({

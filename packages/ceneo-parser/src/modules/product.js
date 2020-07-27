@@ -20,12 +20,11 @@ export const getPricePerEAN = async (page) => {
   }
 };
 
-export const getNextEAN = async () => {
-  return Product.findOne({
+export const getNextEAN = async () =>
+  Product.findOne({
     order: [['visitId', 'ASC']],
     attributes: ['ean', 'id', 'visitId', 'price', 'service', 'name'],
   });
-};
 
 const getItemSelectors = (url) => {
   console.log(url);
@@ -66,12 +65,12 @@ const getItems = async (page, containerSelector) => {
     return items.map((item) => {
       const name = item.querySelector(
         'strong.cat-prod-row__name, strong.cat-prod-box__name',
-      );
+      ).innerText;
       const price = item.querySelector('span.price').innerText;
 
       return {
-        name: name.innerText,
-        price: price,
+        name,
+        price,
       };
     });
   });

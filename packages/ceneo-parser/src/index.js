@@ -15,4 +15,5 @@ const main = async () => {
   await close(browser);
 };
 
-cron(process.env.CRON, main);
+main();
+// cron(process.env.CRON, main);
