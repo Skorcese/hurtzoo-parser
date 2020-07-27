@@ -20,7 +20,7 @@ export const getPricePerEAN = async (page) => {
   }
 };
 
-const getNextEAN = async () => {
+export const getNextEAN = async () => {
   return Product.findOne({
     order: [['visitId', 'ASC']],
     attributes: ['ean', 'id', 'visitId', 'price', 'service', 'name'],
