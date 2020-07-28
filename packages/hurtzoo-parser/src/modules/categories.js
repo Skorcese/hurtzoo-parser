@@ -29,7 +29,16 @@ export const updateCategoryVisitId = async (category) => {
 
 export const getCategories = async (page) => {
   await page.setUserAgent(USER_AGENT);
-  await page.goto(BASE_URL);
+
+  try {
+    await page.goto(BASE_URL, {
+      waitUntil: 'load',
+      timeout: 0,
+    });
+  } catch (error) {
+    console.log('Navigation error, restarting process...');
+    process.exit(1);
+  }
   await page.waitForSelector('.categories-ajax li');
 
   return page.$eval('.categories-ajax', (container) => {

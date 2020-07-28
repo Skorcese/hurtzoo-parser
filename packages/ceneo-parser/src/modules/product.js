@@ -6,8 +6,14 @@ export const getPricePerEAN = async (page) => {
   const product = await getNextEAN();
   console.log('EAN - ', product.ean);
 
-  await page.goto(`${BASE_URL}+${product.ean}`);
   await page.setUserAgent(USER_AGENT);
+
+  try {
+    await page.goto(`${BASE_URL}+${product.ean}`);
+  } catch (error) {
+    console.log('Page crashed, restarting process...');
+    process.exit(1);
+  }
 
   const url = await page.url();
 

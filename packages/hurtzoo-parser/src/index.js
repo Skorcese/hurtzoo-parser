@@ -12,7 +12,7 @@ import { getProducts, storeProducts } from './modules/products.js';
 import { saveInitialDiscounts } from './modules/discount.js';
 
 const main = async () => {
-  await sequelize.sync({ force: process.env.SYNC_DB });
+  await sequelize.sync({ force: process.env.SYNC_DB === 'true' });
   await saveInitialDiscounts();
   const { browser, page } = await initBrowser({
     headless: false,
