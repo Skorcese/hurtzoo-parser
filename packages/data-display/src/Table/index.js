@@ -5,7 +5,7 @@ const getData = ({ sortColumnName, sortOrder }) => {
   const order = shouldSort(sortColumnName) ? [] : [[sortColumnName, sortOrder]];
 
   return Product.findAll({
-    order,
+    order: order[0].includes(undefined) ? [] : order,
   });
 };
 
