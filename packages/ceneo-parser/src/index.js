@@ -2,9 +2,11 @@ import { close, initBrowser, cron } from '@bushidogames/utils';
 import { getPricePerEAN, getNextEAN } from './modules/product.js';
 
 const main = async () => {
-  if (await !getNextEAN()) {
-    console.log('EAN not found, tring again in 5 seconds...');
-    setTimeout(main, 5000);
+  process.exit(1);
+  const product = await getNextEAN();
+  if (!product) {
+    console.log('EAN not found, trying again in 20 seconds...');
+    setTimeout(main, 20000);
     return;
   }
 

@@ -18,7 +18,7 @@ services:
   ceneo-parser:
     container_name: ceneo-parser
     image: buildkite/puppeteer:latest
-    command: node packages/ceneo-parser/src/index.js
+    command: node node_modules/nodemon/bin/nodemon.js --ignore data/ --inspect="0.0.0.0:9229" packages/ceneo-parser/src/index.js
     working_dir: ${PWD}
     volumes:
       - ${PWD}:${PWD}
@@ -35,7 +35,7 @@ services:
   hurtzoo-parser:
     container_name: hurtzoo-parser
     image: buildkite/puppeteer:latest
-    command: node packages/hurtzoo-parser/src/index.js
+    command: node node_modules/nodemon/bin/nodemon.js -x 'node packages/hurtzoo-parser/src/index.js || touch packages/hurtzoo-parser/src/index.js'
     working_dir: ${PWD}
     volumes:
       - ${PWD}:${PWD}
@@ -45,6 +45,8 @@ services:
       MYSQL_USER: root
       MYSQL_HOST: moondog-parser-db
       SYNC_DB: 'true'
+    ports:
+      - '9231:9229'
     depends_on:
       - moondog-parser-db
   moondog-parser-db:
