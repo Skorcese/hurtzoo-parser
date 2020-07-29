@@ -1,10 +1,10 @@
 import { Product, Op } from '@bushidogames/db';
+import { logger, HURTZOO_PARSER } from '@bushidogames/utils';
 import { BASE_URL, USER_AGENT, SCREENSHOT_PATH } from '../config.js';
 
 export const getPricePerEAN = async (page) => {
-  console.log('-------------------------------');
   const product = await getNextEAN();
-  console.log('EAN - ', product.ean);
+  logger.info(HURTZOO_PARSER, 'EAN - ', product.ean);
 
   await page.setUserAgent(USER_AGENT);
 
@@ -33,7 +33,6 @@ export const getNextEAN = async () =>
   });
 
 const getItemSelectors = (url) => {
-  console.log(url);
   return url.includes('/;szukaj')
     ? ['.cat-prod-row', '.alert > .cat-prod-row']
     : ['.category-list', '.category-list-body > .cat-prod-box'];
@@ -53,15 +52,12 @@ const getBestItem = async (page, url) => {
       price: parseFloat(price.replace(',', '.').replace(' ', '')).toFixed(2),
     }));
 
-    // TODO name filtering here
-
     const lowest = parsedProducts.sort((a, b) => a.price - b.price)[0];
 
     return lowest === undefined || lowest.length == 0
       ? { price: 0 }
       : { price: lowest.price };
   } catch (error) {
-    console.log(error);
     return { price: 0 };
   }
 };
@@ -88,13 +84,11 @@ const isPriceValid = async (page, cPrice, productPrice, ean) => {
   const comparison = ceneoPrice / servicePrice;
 
   if (comparison > 2) {
-    console.log(`Too expensive`);
     makeScreenshot(page, ean);
     return false;
   }
 
   if (comparison < 0.5) {
-    console.log(`Too cheap`);
     makeScreenshot(page, ean);
     return false;
   }
@@ -110,8 +104,8 @@ const makeScreenshot = (page, ean) => {
 };
 
 const updateProduct = async (page, item, product) => {
-  console.log('ceneoPrice: ', item.price);
-  console.log('hurtZooPrice: ', product.price);
+  logger.info(HURTZOO_PARSER, 'ceneoPrice: ', item.price);
+  logger.info(HURTZOO_PARSER, 'hurtZooPrice: ', product.price);
   product.isUncertain = !isPriceValid(
     page,
     item.price,

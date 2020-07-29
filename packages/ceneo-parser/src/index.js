@@ -17,4 +17,4 @@ const main = async () => {
 };
 
 main();
-// cron(process.env.CRON, main);
+cron(process.env.CRON, main);
