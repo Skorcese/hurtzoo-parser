@@ -1,4 +1,4 @@
-import { close, initBrowser } from '@bushidogames/utils';
+import { close, initBrowser, cron } from '@bushidogames/utils';
 import { sequelize } from '@bushidogames/db';
 import {
   getCategories,
@@ -12,7 +12,7 @@ import { getProducts, storeProducts } from './modules/products.js';
 import { saveInitialDiscounts } from './modules/discount.js';
 
 const main = async () => {
-  await sequelize.sync({ force: process.env.SYNC_DB === 'true' });
+  await sequelize.sync({ force: Boolean(process.env.SYNC_DB) });
   await saveInitialDiscounts();
   const { browser, page } = await initBrowser({
     headless: false,
@@ -51,4 +51,10 @@ const loopThroughCategories = async (page, minVisitId) => {
   }
 };
 
-main();
+try {
+  main();
+} catch (error) {
+  console.log('Main crashed, restarting process...');
+  process.exit(1);
+}
+cron(process.env.CRON, main);

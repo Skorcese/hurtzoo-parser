@@ -16,5 +16,10 @@ const main = async () => {
   await close(browser);
 };
 
-main();
-// cron(process.env.CRON, main);
+try {
+  main();
+} catch (error) {
+  console.log('Main crashed, restarting process...');
+  process.exit(1);
+}
+cron(process.env.CRON, main);

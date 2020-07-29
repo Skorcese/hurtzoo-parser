@@ -44,7 +44,7 @@ services:
       MYSQL_PASS: 123qwe
       MYSQL_USER: root
       MYSQL_HOST: moondog-parser-db
-      SYNC_DB: 'false'
+      SYNC_DB: 0
       CRON: '0 0 10 0 0 0 0'
     ports:
       - '9231:9229'

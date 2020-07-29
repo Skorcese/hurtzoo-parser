@@ -1,11 +1,11 @@
 import { Product } from '@bushidogames/db';
 import { TABLE_HEADERS, VIRTUAL, BASE_URL } from '../config.js';
 
-const getData = ({ sortColumnName, sortOrder }) => {
+const getData = ({ sortColumnName = 'id', sortOrder = 'ASC' }) => {
   const order = shouldSort(sortColumnName) ? [] : [[sortColumnName, sortOrder]];
 
   return Product.findAll({
-    order: order[0].includes(undefined) ? [] : order,
+    order,
   });
 };
 
