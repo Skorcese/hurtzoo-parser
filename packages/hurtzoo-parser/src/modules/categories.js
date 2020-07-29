@@ -1,5 +1,6 @@
 import { DEFAULT_SERVICE, BASE_URL, USER_AGENT } from '../config.js';
 import { Category } from '@bushidogames/db';
+import { logger, HURTZOO_PARSER } from '@bushidogames/utils';
 
 export const setProductsPerPageCookie = async (page) => {
   return page.$eval('.categories-ajax', () => {
@@ -14,7 +15,8 @@ export const openNextCategory = async (page, category) => {
     await page.waitFor('article.product-inside', { timeout: 5000 });
     return true;
   } catch (e) {
-    console.log(
+    logger.info(
+      HURTZOO_PARSER,
       `Category not found, Removing from database: ${category.url} ${category.localId}`,
     );
     await category.destroy();
@@ -36,7 +38,7 @@ export const getCategories = async (page) => {
       timeout: 0,
     });
   } catch (error) {
-    console.log('Navigation error, restarting process...');
+    loggger.warn(HURTZOO_PARSER, 'Navigation error, restarting process...');
     process.exit(1);
   }
   await page.waitForSelector('.categories-ajax li');
@@ -70,7 +72,8 @@ export const storeCategories = async (allCategories) => {
   const categories = await Promise.all(promises);
   const createdCategories = categories.filter(([_cat, isCreated]) => isCreated);
 
-  console.log(
+  logger.info(
+    HURTZOO_PARSER,
     `Found ${allCategories.length} categories. Stored ${createdCategories.length} new entries in the db.`,
   );
 

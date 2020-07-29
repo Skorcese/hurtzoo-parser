@@ -1,6 +1,7 @@
 import { DEFAULT_SERVICE, BASE_URL } from '../config.js';
-import { Product } from '@bushidogames/db';
 import { getDiscount, calculateDiscount } from './discount.js';
+import { Product } from '@bushidogames/db';
+import { logger, HURTZOO_PARSER } from '@bushidogames/utils';
 
 const getUniquePaginationUrls = (urls) =>
   [...new Set(urls)].filter((url) => !url.match(/javascript/));
@@ -11,11 +12,11 @@ export const getProducts = async (page) => {
       timeout: 5000,
     });
 
-    console.log('Changing products per page option');
+    logger.info(HURTZOO_PARSER, 'Changing products per page option');
     await page.click('#f_searcher > div:nth-child(2) .trigger');
     await page.click('#f_searcher li[data-raw-value="96"]');
     await page.waitForNavigation();
-    console.log('Changed products per page option');
+    logger.info(HURTZOO_PARSER, 'Changed products per page option');
 
     const paginationUrls = await page.$eval('.pagination', (container) => {
       const links = [...container.querySelectorAll('a')];
@@ -31,7 +32,7 @@ export const getProducts = async (page) => {
 
     return products;
   } catch (e) {
-    console.log('NO PAGINATION');
+    logger.info(HURTZOO_PARSER, 'NO PAGINATION');
     return getProductsFromOnePage(page);
   }
 };
@@ -84,7 +85,7 @@ export const storeProducts = async (allProducts) => {
   });
   const products = await Promise.all(promises);
 
-  console.log(`Found ${allProducts.length} products.`);
+  logger.info(HURTZOO_PARSER, `Found ${allProducts.length} products.`);
 
   return products;
 };

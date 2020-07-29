@@ -1,11 +1,17 @@
-import { close, initBrowser, cron } from '@bushidogames/utils';
+import {
+  close,
+  initBrowser,
+  cron,
+  logger,
+  CENEO_PARSER,
+} from '@bushidogames/utils';
 import { getPricePerEAN, getNextEAN } from './modules/product.js';
 
 const main = async () => {
   const product = await getNextEAN();
   if (!product) {
-    console.log('EAN not found, trying again in 20 seconds...');
-    setTimeout(main, 20000);
+    logger.info(CENEO_PARSER, 'EAN not found, trying again in 60 seconds...');
+    setTimeout(main, 60000);
     return;
   }
 
