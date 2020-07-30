@@ -22,5 +22,10 @@ const main = async () => {
   await close(browser);
 };
 
-main();
+try {
+  main();
+} catch (error) {
+  logger.error(CENEO_PARSER, 'Main crashed, restarting process...');
+  process.exit(1);
+}
 cron(process.env.CRON, main);
