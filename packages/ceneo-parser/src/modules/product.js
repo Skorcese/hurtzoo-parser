@@ -6,8 +6,14 @@ export const getPricePerEAN = async (page) => {
   const product = await getNextEAN();
   console.log('EAN - ', product.ean);
 
-  await page.goto(`${BASE_URL}+${product.ean}`);
   await page.setUserAgent(USER_AGENT);
+
+  try {
+    await page.goto(`${BASE_URL}+${product.ean}`);
+  } catch (error) {
+    console.log('Page crashed, restarting process...');
+    process.exit(1);
+  }
 
   const url = await page.url();
 
@@ -20,12 +26,11 @@ export const getPricePerEAN = async (page) => {
   }
 };
 
-const getNextEAN = async () => {
-  return Product.findOne({
+export const getNextEAN = async () =>
+  Product.findOne({
     order: [['visitId', 'ASC']],
     attributes: ['ean', 'id', 'visitId', 'price', 'service', 'name'],
   });
-};
 
 const getItemSelectors = (url) => {
   console.log(url);
@@ -66,12 +71,12 @@ const getItems = async (page, containerSelector) => {
     return items.map((item) => {
       const name = item.querySelector(
         'strong.cat-prod-row__name, strong.cat-prod-box__name',
-      );
+      ).innerText;
       const price = item.querySelector('span.price').innerText;
 
       return {
-        name: name.innerText,
-        price: price,
+        name,
+        price,
       };
     });
   });

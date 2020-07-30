@@ -1,8 +1,7 @@
 import { Product } from '@bushidogames/db';
 import { TABLE_HEADERS, VIRTUAL, BASE_URL } from '../config.js';
 
-const getData = (sortBy) => {
-  const { sortColumnName, sortOrder } = sortBy;
+const getData = ({ sortColumnName = 'id', sortOrder = 'ASC' }) => {
   const order = shouldSort(sortColumnName) ? [] : [[sortColumnName, sortOrder]];
 
   return Product.findAll({
@@ -14,8 +13,7 @@ const shouldSort = (sortColumnName) => VIRTUAL.includes(sortColumnName);
 
 const filterData = (obj) => obj.isUncertain === false;
 
-const sortData = (a, b, sortBy) => {
-  const { sortColumnName, sortOrder } = sortBy;
+const sortData = (a, b, { sortColumnName, sortOrder }) => {
   const aVal = a[sortColumnName];
   const bVal = b[sortColumnName];
 

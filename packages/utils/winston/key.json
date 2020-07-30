@@ -1,0 +1,12 @@
+{
+    "type": "service_account",
+    "project_id": "hurtzoo-parser",
+    "private_key_id": "212b03897faf08f0bdd8f1a232eb203dcd907f04",
+    "private_key": "-----BEGIN PRIVATE KEY-----\nMIIEvAIBADANBgkqhkiG9w0BAQEFAASCBKYwggSiAgEAAoIBAQCcegue2+Z/QUYz\naO/0arcF+fNKNg9ZQKCwr4A+I4VOcjBsOSxHoVmI3fRbybGwKnmsCAvD7Qvb8hdD\nPqz9COQU9yNYpOS/FUiJeDi4DaWUrgRSBs9aMeOOT4Ug9Jonzkl1Cxwek/FFVAki\n8dbdyzWrlmFXao65Iwnj4CNhQ9I71lMEPtsYpoXatoRvgtcUR2jQskdv1RoM0UaI\ndhxfdmcleb8jsu3QDcQtfPkg0UsQUx68S+FxjeaPnR/Mipzw+IQNWyDWaTvdK1q0\neCuqrkPC0ASzb67iz0m50drQHCNV3ziUCY2jbOspfvFLgTqSeeHLz5u9y8By5Tui\n6kJtyVvBAgMBAAECggEAAPshgbJc25PpB57JQb6ayKr6J7RgVQwtml0w+w6ea0XL\n0N7oVvT6Gnx8gpaDUbiZzcFaB2bg/DX02mUL0Q5y0VmB98b0BvnXi5loJY8Nkbef\n28b7dW7zhaPJzp/ZsAr0wHAWSbIsucQ+QiFE5KIvG/YTVSKJiTetTKfef5979ZzC\nTfIow2pJmUP/Bd+fPlWe/s+P1IH+WYGT+wwGqBVd/JBF8Jwes2UOb8lzSaUeojY/\nEZVU/ofDIcMAXDhsPrnjn67MeFf5fkqVUrfBiDsxC4gTUlkjXuJ9z7Xxhcjs1zs/\nkPPe9vxwJuIgCAKcU4rFPLA1aPvY/+5V2nMtQZ3NXQKBgQDaVINrJYc+Dzyt5vtO\ne+Xbk9G7NLT+13p2Za5Db4y28uJZaY8cGTTpFjJ7UxHuuxBaiXWPNbW04EPB0GYU\ngTHq7iIOK2GuEFidg2LkKf88+ZdCh5SKvTdan15C4mcM/HQOomL7keKG2TAY92mc\ntKojJW4+YeBeuvMhUHINK2wrRQKBgQC3eYMCOzytVrM3uCZcYPN9BRiWW5rxELaE\n5YTQoh0b40Ig/rd569wPqbRbuegraSYCpdO0h6PYRz8+D0WQBtqnwnpLoFNvWD/p\nnAroeJR2xqylqvQ24+jP44RgcqWMMcwwUNwug+VYgtiRi3kQhfjx+/EZUtWzJe0p\ngVuLJZh4TQKBgDJvIWiH48TnOiol2FmZ71AYxnMLSuAvoH9nH6k+RHAijT0AUGm6\nPOm3EfRBDTxrg+yWIkzxqEbfI2fLHzmPWpudZMqHJOpTplTEe/ye4vIP6ewZa6vc\n58OMWvbyW8G5M4oJ4vmgCocB9sVdqczkQwUZaW0JqQ3Y+77vWVlHdZZNAoGAS1jp\nhmcRWhY672z+w/1EwVjwaf8guFMmwZkIXC3XSnaf17EDZFyKORx2Zx0HzZwW8gtr\nz73Meat4u2HGLYnDDhX950TmPtm9FZDxodqzDbw1dquoM0qRd5515K3wcoyY0FbE\ntY2RCDJkAhGHHFQIkkfnEYFFJZczuFHZaGF+JhkCgYBVDu3IVBUoqIjxAt5qy5xs\n3dgy2FkFKl96tOZFydlRFxSs+RjFXu0AOA++ze06Yl4QElqK5Y8GCwjdUrtv9m0W\nUsIZwoQQSTAkUwfQbaENasxBBENarmajrfk1XLt/hbeNK186bQBrgblP2Qs84njX\n/I6OpxuVIkf7780NkuU4+Q==\n-----END PRIVATE KEY-----\n",
+    "client_email": "hurtzoo-parser-logger@hurtzoo-parser.iam.gserviceaccount.com",
+    "client_id": "117155320430315118754",
+    "auth_uri": "https://accounts.google.com/o/oauth2/auth",
+    "token_uri": "https://oauth2.googleapis.com/token",
+    "auth_provider_x509_cert_url": "https://www.googleapis.com/oauth2/v1/certs",
+    "client_x509_cert_url": "https://www.googleapis.com/robot/v1/metadata/x509/hurtzoo-parser-logger%40hurtzoo-parser.iam.gserviceaccount.com"
+  }

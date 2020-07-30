@@ -1,4 +1,4 @@
-import { DEFAULT_SERVICE, BASE_URL } from '../config.js';
+import { DEFAULT_SERVICE, BASE_URL, USER_AGENT } from '../config.js';
 import { Category } from '@bushidogames/db';
 
 export const setProductsPerPageCookie = async (page) => {
@@ -28,7 +28,17 @@ export const updateCategoryVisitId = async (category) => {
 };
 
 export const getCategories = async (page) => {
-  await page.goto(BASE_URL);
+  await page.setUserAgent(USER_AGENT);
+
+  try {
+    await page.goto(BASE_URL, {
+      waitUntil: 'load',
+      timeout: 0,
+    });
+  } catch (error) {
+    console.log('Navigation error, restarting process...');
+    process.exit(1);
+  }
   await page.waitForSelector('.categories-ajax li');
 
   return page.$eval('.categories-ajax', (container) => {
