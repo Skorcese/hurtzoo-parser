@@ -1,4 +1,9 @@
-import { close, initBrowser, cron } from '@bushidogames/utils';
+import {
+  close,
+  initBrowser,
+  logger,
+  HURTZOO_PARSER,
+} from '@bushidogames/utils';
 import { sequelize } from '@bushidogames/db';
 import {
   getCategories,
@@ -37,7 +42,11 @@ const loopThroughCategories = async (page, minVisitId) => {
 
   const isOpened = await openNextCategory(page, category);
   if (isOpened) {
-    console.log('Getting products from category: ', category.localId);
+    logger.info(
+      HURTZOO_PARSER,
+      'Getting products from category: ',
+      category.localId,
+    );
     const products = await getProducts(page);
     await storeProducts(products);
 
@@ -54,7 +63,7 @@ const loopThroughCategories = async (page, minVisitId) => {
 try {
   main();
 } catch (error) {
-  console.log('Main crashed, restarting process...');
+  logger.error(HURTZOO_PARSER, 'Main crashed, restarting process...');
   process.exit(1);
 }
 cron(process.env.CRON, main);

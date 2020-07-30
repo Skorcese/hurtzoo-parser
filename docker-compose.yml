@@ -31,7 +31,7 @@ services:
     ports:
       - '9230:9229'
     depends_on:
-      - moondog-parser-db
+      - hurtzoo-parser
   hurtzoo-parser:
     container_name: hurtzoo-parser
     image: buildkite/puppeteer:latest

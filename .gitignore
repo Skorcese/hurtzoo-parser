@@ -6,3 +6,4 @@ data
 yarn-error.log
 .next
 *.jpg
+key.json
