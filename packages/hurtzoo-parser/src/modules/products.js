@@ -12,11 +12,11 @@ export const getProducts = async (page) => {
       timeout: 5000,
     });
 
-    logger.info(HURTZOO_PARSER, 'Changing products per page option');
+    logger.info(HURTZOO_PARSER + 'Changing products per page option');
     await page.click('#f_searcher > div:nth-child(2) .trigger');
     await page.click('#f_searcher li[data-raw-value="96"]');
     await page.waitForNavigation();
-    logger.info(HURTZOO_PARSER, 'Changed products per page option');
+    logger.info(HURTZOO_PARSER + 'Changed products per page option');
 
     const paginationUrls = await page.$eval('.pagination', (container) => {
       const links = [...container.querySelectorAll('a')];
@@ -32,7 +32,7 @@ export const getProducts = async (page) => {
 
     return products;
   } catch (e) {
-    logger.info(HURTZOO_PARSER, 'NO PAGINATION');
+    logger.info(HURTZOO_PARSER + 'NO PAGINATION');
     return getProductsFromOnePage(page);
   }
 };
@@ -85,7 +85,7 @@ export const storeProducts = async (allProducts) => {
   });
   const products = await Promise.all(promises);
 
-  logger.info(HURTZOO_PARSER, `Found ${allProducts.length} products.`);
+  logger.info(`${HURTZOO_PARSER}Found ${allProducts.length} products.`);
 
   return products;
 };

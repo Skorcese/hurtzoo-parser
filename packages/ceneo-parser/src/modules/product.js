@@ -4,14 +4,14 @@ import { BASE_URL, USER_AGENT, SCREENSHOT_PATH } from '../config.js';
 
 export const getPricePerEAN = async (page) => {
   const product = await getNextEAN();
-  logger.info(CENEO_PARSER, 'EAN - ', product.ean);
+  logger.info(CENEO_PARSER + 'EAN - ', product.ean);
 
   await page.setUserAgent(USER_AGENT);
 
   try {
     await page.goto(`${BASE_URL}+${product.ean}`);
   } catch (error) {
-    logger.warn(CENEO_PARSER, 'Page crashed, restarting process...');
+    logger.warn(CENEO_PARSER + 'Page crashed, restarting process...');
     process.exit(1);
   }
 
@@ -58,7 +58,7 @@ const getBestItem = async (page, url) => {
       ? { price: 0 }
       : { price: lowest.price };
   } catch (error) {
-    logger.warn(CENEO_PARSER, 'Product not found');
+    logger.warn(CENEO_PARSER + 'Product not found');
     return { price: 0 };
   }
 };
@@ -105,8 +105,8 @@ const makeScreenshot = (page, ean) => {
 };
 
 const updateProduct = async (page, item, product) => {
-  logger.info(CENEO_PARSER, 'ceneoPrice: ', item.price);
-  logger.info(CENEO_PARSER, 'hurtZooPrice: ', product.price);
+  logger.info(CENEO_PARSER + 'ceneoPrice: ', item.price);
+  logger.info(CENEO_PARSER + 'hurtZooPrice: ', product.price);
   product.isUncertain = !isPriceValid(
     page,
     item.price,

@@ -44,9 +44,7 @@ const loopThroughCategories = async (page, minVisitId) => {
   const isOpened = await openNextCategory(page, category);
   if (isOpened) {
     logger.info(
-      HURTZOO_PARSER,
-      'Getting products from category: ',
-      category.localId,
+      `${HURTZOO_PARSER}Getting products from category: ${category.localId}`,
     );
     const products = await getProducts(page);
     await storeProducts(products);
@@ -64,7 +62,7 @@ const loopThroughCategories = async (page, minVisitId) => {
 try {
   main();
 } catch (error) {
-  logger.error(HURTZOO_PARSER, 'Main crashed, restarting process...');
+  logger.error(HURTZOO_PARSER + 'Main crashed, restarting process...');
   process.exit(1);
 }
 cron(process.env.CRON, main);
