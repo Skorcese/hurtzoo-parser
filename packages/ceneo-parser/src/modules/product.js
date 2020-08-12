@@ -105,8 +105,8 @@ const makeScreenshot = (page, ean) => {
 };
 
 const updateProduct = async (page, item, product) => {
-  logger.info(CENEO_PARSER + 'ceneoPrice: ', item.price);
-  logger.info(CENEO_PARSER + 'hurtZooPrice: ', product.price);
+  logger.info(`${CENEO_PARSER}ceneoPrice: ${item.price}`);
+  logger.info(`${CENEO_PARSER}hurtZooPrice: ${product.price}`);
   product.isUncertain = !isPriceValid(
     page,
     item.price,
