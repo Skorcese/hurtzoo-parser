@@ -1,0 +1,56 @@
+version: '3'
+services:
+  build-image:
+    build: .
+    image: hurtzoo-monorepo:1.0
+  data-display:
+    container_name: data-display
+    image: hurtzoo-monorepo:1.0
+    command: node node_modules/nodemon/bin/nodemon.js --watch packages/data-display/src --inspect="0.0.0.0:9229" packages/data-display/src/index.js
+    environment:
+      MYSQL_PORT: 3306
+      MYSQL_PASS: 123qwe
+      MYSQL_USER: root
+      MYSQL_HOST: moondog-parser-db
+    ports:
+      - '8050:3000'
+    depends_on:
+      - build-image
+  ceneo-parser:
+    container_name: ceneo-parser
+    image: hurtzoo-monorepo:1.0
+    command: node node_modules/nodemon/bin/nodemon.js --watch packages/ceneo-parser/src -x 'node packages/ceneo-parser/src/index.js || touch packages/ceneo-parser/src/index.js'
+    environment:
+      MYSQL_PORT: 3306
+      MYSQL_PASS: 123qwe
+      MYSQL_USER: root
+      MYSQL_HOST: moondog-parser-db
+      CRON: '0 0 10 0 0 0 0'
+    depends_on:
+      - hurtzoo-parser
+  hurtzoo-parser:
+    container_name: hurtzoo-parser
+    image: hurtzoo-monorepo:1.0
+    command: node node_modules/nodemon/bin/nodemon.js --watch packages/hurtzoo-parser/src -x 'node packages/hurtzoo-parser/src/index.js || touch packages/hurtzoo-parser/src/index.js'
+    environment:
+      MYSQL_PORT: 3306
+      MYSQL_PASS: 123qwe
+      MYSQL_USER: root
+      MYSQL_HOST: moondog-parser-db
+      SYNC_DB: 1
+      CRON: '0 0 10 0 0 0 0'
+    depends_on:
+      - moondog-parser-db
+  moondog-parser-db:
+    image: mysql
+    restart: always
+    command: --default-authentication-plugin=mysql_native_password
+    volumes:
+      - hurtzoo-parser-db-volume:/var/lib/mysql
+    environment:
+      MYSQL_ROOT_PASSWORD: 123qwe
+    ports:
+      - '3308:3306'
+
+volumes:
+  hurtzoo-parser-db-volume:

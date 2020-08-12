@@ -10,7 +10,7 @@ import { getPricePerEAN, getNextEAN } from './modules/product.js';
 const main = async () => {
   const product = await getNextEAN();
   if (!product) {
-    logger.info(CENEO_PARSER, 'EAN not found, trying again in 60 seconds...');
+    logger.info(CENEO_PARSER + 'EAN not found, trying again in 60 seconds...');
     setTimeout(main, 60000);
     return;
   }
@@ -25,7 +25,7 @@ const main = async () => {
 try {
   main();
 } catch (error) {
-  logger.error(CENEO_PARSER, 'Main crashed, restarting process...');
+  logger.error(CENEO_PARSER + 'Main crashed, restarting process...');
   process.exit(1);
 }
 cron(process.env.CRON, main);

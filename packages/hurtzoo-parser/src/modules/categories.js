@@ -16,8 +16,7 @@ export const openNextCategory = async (page, category) => {
     return true;
   } catch (e) {
     logger.info(
-      HURTZOO_PARSER,
-      `Category not found, Removing from database: ${category.url} ${category.localId}`,
+      `${HURTZOO_PARSER}Category not found, Removing from database: ${category.url} ${category.localId}`,
     );
     await category.destroy();
     return false;
@@ -38,7 +37,7 @@ export const getCategories = async (page) => {
       timeout: 0,
     });
   } catch (error) {
-    loggger.warn(HURTZOO_PARSER, 'Navigation error, restarting process...');
+    loggger.warn(HURTZOO_PARSER + 'Navigation error, restarting process...');
     process.exit(1);
   }
   await page.waitForSelector('.categories-ajax li');
@@ -73,8 +72,7 @@ export const storeCategories = async (allCategories) => {
   const createdCategories = categories.filter(([_cat, isCreated]) => isCreated);
 
   logger.info(
-    HURTZOO_PARSER,
-    `Found ${allCategories.length} categories. Stored ${createdCategories.length} new entries in the db.`,
+    `${HURTZOO_PARSER}Found ${allCategories.length} categories. Stored ${createdCategories.length} new entries in the db.`,
   );
 
   return categories;
